@@ -1,11 +1,21 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import TabsPage from '../views/tabs/Tabs.vue'
+import login from '../views/login/login.vue'
+import registreer from '../views/registreer/registreer.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/main'
+    redirect: '/login',
+  },
+  {
+    path: '/login/',
+    component: login,
+  },
+  {
+    path: '/registreer/',
+    component: registreer,
   },
   {
     path: '/tabs/',
@@ -13,23 +23,27 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
-        redirect: '/tabs/main'
+        redirect: '/tabs/home'
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
+        path: 'Settings',
+        component: () => import('@/views/tabs/settings.vue')
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
+        path: 'historie',
+        component: () => import('@/views/tabs/historie.vue')
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
+        path: 'home',
+        component: () => import('@/views/tabs/home.vue')
       },
       {
-        path: 'tab4',
-        component: () => import('@/views/Tab3Page.vue')
+        path: 'facturen',
+        component: () => import('@/views/tabs/facturen.vue')
+      },
+      {
+        path: 'profiel',
+        component: () => import('@/views/tabs/profiel.vue')
       }
     ]
   }
