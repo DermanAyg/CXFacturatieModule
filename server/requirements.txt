@@ -20,3 +20,4 @@ python-dotenv
 psycopg2-binary
 pytest
 pytest-mock-resources
+reportlab

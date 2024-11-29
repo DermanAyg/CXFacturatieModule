@@ -11,8 +11,8 @@ class Company(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, index=True, nullable=True)
     email = Column(String, unique=True, index=True, nullable=True)
-    mobile = Column(Integer, unique=True, index=True, nullable=True)
-    emergency_phone = Column(Integer, unique=True, index=True, nullable=True)
+    mobile = Column(String, unique=True, index=True, nullable=True)
+    emergency_phone = Column(String, unique=True, index=True, nullable=True)
     kvk_nr = Column(String, unique=True, index=True, nullable=True)
     btw_nr = Column(String, unique=True, index=True, nullable=True)
 
@@ -74,7 +74,7 @@ class Invoice(Base):
     remarks = relationship("Remark", back_populates="invoice")
 
     def __repr__(self):
-        return f"<Invoice(id={self.id}, number='{self.number}', uploaded_at='{self.uploaded_at}', last_activity='{self.last_activity}', status='{self.status}', user_id={self.user_id})>"
+        return f"<Invoice(id={self.id}, number='{self.number}', uploaded_at='{self.uploaded_at}', last_activity='{self.last_activity}', file='{self.file}', status='{self.status}', user_id={self.user_id})>"
 
 class Remark(Base):
     __tablename__ = "Remark"

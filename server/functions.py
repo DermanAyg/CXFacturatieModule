@@ -3,13 +3,38 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
 from typing import Any, Dict
 from fastapi import HTTPException
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 from database import models, schemas
 
-
 # Business logic
 
+# factuur genereren
 
+def generate_invoice(invoice_data):
+    buffer = io.BytesIO()
+    pdf = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+
+    table = Table(invoice_data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    
+    elements.append(table)
+    pdf.build(elements)
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    return pdf_content
 
 # models
 
@@ -26,11 +51,16 @@ def create_company(db: Session, company: schemas.CompanyCreate):
     if not company.name:
         raise HTTPException(status_code=400, detail="Name field is required and cannot be null")
     
-    db.add(company)
+    companydb = models.Company()
+
+    for var, value in vars(company).items():
+        setattr(companydb, var, value) if value else None
+    
+    db.add(companydb)
     db.commit()   
     db.close()
 
-    return company
+    return companydb
 
 def update_company(db: Session, company: schemas.CompanyCreate, company_id = int):
 
@@ -74,11 +104,16 @@ def create_invoice(db: Session, invoice: schemas.InvoiceCreate):
     if not invoice.number:
         raise HTTPException(status_code=400, detail="number field is required and cannot be null")
     
-    db.add(invoice)
+    invoicedb = models.Invoice()
+
+    for var, value in vars(invoice).items():
+        setattr(invoicedb, var, value) if value else None
+    
+    db.add(invoicedb)
     db.commit()   
     db.close()
 
-    return invoice
+    return invoicedb
 
 def update_invoice(db: Session, invoice: schemas.InvoiceCreate, invoice_id = int):
 
@@ -121,12 +156,17 @@ def create_user(db: Session, user: schemas.UserCreate):
 
     if not user.username:
         raise HTTPException(status_code=400, detail="username field is required and cannot be null")
+
+    userdb = models.User()
+
+    for var, value in vars(user).items():
+        setattr(userdb, var, value) if value else None
     
-    db.add(user)
+    db.add(userdb)
     db.commit()   
     db.close()
 
-    return user
+    return userdb
 
 def update_user(db: Session, user: schemas.UserCreate, user_id = int):
 
@@ -170,11 +210,16 @@ def create_profile(db: Session, profile: schemas.ProfileCreate):
     if not profile.firstname:
         raise HTTPException(status_code=400, detail="firstname field is required and cannot be null")
     
-    db.add(profile)
+    profiledb = models.Profile()
+
+    for var, value in vars(profile).items():
+        setattr(profiledb, var, value) if value else None
+    
+    db.add(profiledb)
     db.commit()   
     db.close()
 
-    return profile
+    return profiledb
 
 def update_profile(db: Session, profile: schemas.ProfileCreate, profile_id = int):
 
@@ -218,11 +263,16 @@ def create_remark(db: Session, remark: schemas.RemarkCreate):
     if not remark.description:
         raise HTTPException(status_code=400, detail="description field is required and cannot be null")
     
-    db.add(remark)
+    remarkdb = models.Remark()
+
+    for var, value in vars(remark).items():
+        setattr(remarkdb, var, value) if value else None
+    
+    db.add(remarkdb)
     db.commit()   
     db.close()
 
-    return remark
+    return remarkdb
 
 def update_remark(db: Session, remark: schemas.RemarkCreate, remark_id = int):
 

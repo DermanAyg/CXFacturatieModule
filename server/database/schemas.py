@@ -58,8 +58,8 @@ class User(UserBase):
 class CompanyBase(BaseModel):
     name: Optional[str]
     email: Optional[str]
-    mobile: Optional[int]
-    emergency_phone: Optional[int]
+    mobile: Optional[str]
+    emergency_phone: Optional[str]
     kvk_nr: Optional[str]
     btw_nr: Optional[str]
     users: List[User] = []
