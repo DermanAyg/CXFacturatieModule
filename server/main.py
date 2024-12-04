@@ -6,9 +6,10 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from database.db import SessionLocal, engine
 from typing import Any, Dict
-from sqlalchemy import desc, update
+from sqlalchemy import JSON, desc, update
 from fastapi.responses import Response
 import functions
+import json
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -29,6 +30,27 @@ def get_db():
         db.close()
 
 # ENDPOINTS
+
+# Business logic
+
+# Create invoice
+
+@app.post("/generate-invoice/", status_code=status.HTTP_201_CREATED, tags=["Etc"])
+def generate_invoice(data: Dict[str, Any], db: Session = Depends(get_db)):
+    generated_invoice = functions.generate_invoice(data)
+
+    functions.create_invoice(db, models.Invoice(
+        number=data['factuurnummer'],
+        uploaded_at=None,
+        last_activity=None,
+        file=generated_invoice,
+        status="open",
+        user_id=None
+    ))
+
+    return f"created invoice"
+
+# Entities
 
 # Company
 

@@ -1,12 +1,15 @@
 import io
+import json
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
 from typing import Any, Dict
 from fastapi import HTTPException
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 
 from database import models, schemas
 
@@ -19,20 +22,126 @@ def generate_invoice(invoice_data):
     pdf = SimpleDocTemplate(buffer, pagesize=letter)
     elements = []
 
-    table = Table(invoice_data)
+    PAGE_WIDTH, PAGE_HEIGHT = A4
+    LEFT_MARGIN = 72
+    RIGHT_MARGIN = 72
+    AVAILABLE_WIDTH = PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN
+
+    colWidths = [
+        0.20 * AVAILABLE_WIDTH,
+        0.40 * AVAILABLE_WIDTH,
+        0.15 * AVAILABLE_WIDTH,
+        0.10 * AVAILABLE_WIDTH,
+        0.20 * AVAILABLE_WIDTH,
+    ]
+
+    styles = getSampleStyleSheet()
+    normal_style = styles['Normal']
+
+    centered_normal_style = ParagraphStyle(
+        'CenteredStyle',
+        parent=normal_style,
+        alignment=TA_CENTER
+    )
+    
+    right_normal_style = ParagraphStyle(
+        'RightStyle',
+        parent=normal_style,
+        alignment=TA_RIGHT
+    )
+
+    elements.append(Paragraph(f"DATUM: {invoice_data['factuurdatum']}", normal_style))
+    elements.append(Paragraph(f"FACTUURNR: {invoice_data['factuurnummer']}", normal_style))
+
+    elements.append(Paragraph(f"Aan:", right_normal_style))
+    elements.append(Paragraph(f"<strong>{invoice_data['klant-naam']}</strong>", right_normal_style))
+    elements.append(Paragraph(f"{invoice_data['klant-straat']} {invoice_data['klant-huisnummer']}", right_normal_style))
+    elements.append(Paragraph(f"{invoice_data['klant-postcode']} {invoice_data['klant-plaats']}", right_normal_style))
+   
+    elements.append(Spacer(2, 30))
+
+    elements.append(Paragraph(f"Van:", right_normal_style))
+    elements.append(Paragraph(f"<strong>{invoice_data['bedrijfsnaam']}</strong>", right_normal_style))
+    elements.append(Paragraph(f"{invoice_data['straat']} {invoice_data['huisnummer']}", right_normal_style))
+    elements.append(Paragraph(f"{invoice_data['postcode']} {invoice_data['plaats']}", right_normal_style))
+   
+    elements.append(Spacer(2, 50))
+
+    elements.append(Paragraph(f"VERVALDATUM", normal_style))
+    elements.append(Paragraph(f"{invoice_data['vervaldatum']}", normal_style))
+
+    elements.append(Spacer(1, 12))
+
+    table_data = [["Hoeveelheid", "Omschrijving", "Prijs", "Btw", "Regeltotaal"]]
+    for product in invoice_data['producten']:
+        table_data.append([
+            product.get("hoeveelheid", ""),
+            product.get("omschrijving", ""),
+            product.get("prijs", ""),
+            product.get("btw", ""),
+            product.get("regeltotaal", int(product['hoeveelheid']) * int(product['prijs'])),
+        ])
+
+    table = Table(table_data, colWidths=colWidths)
+    
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
     ]))
-    
+
     elements.append(table)
+    elements.append(Spacer(1, 12))
+
+    totaal_excl_btw = 0
+    btw_9 = 0
+    btw_21 = 0
+
+    for product in invoice_data['producten']:
+        totaal_excl_btw += int(product['hoeveelheid']) * int(product['prijs'])
+
+        if product['btw'] == "9":
+            btw_9 += (int(product['hoeveelheid']) * int(product['prijs'])) * 0.09
+
+        if product['btw'] == "21":
+            btw_21 += (int(product['hoeveelheid']) * int(product['prijs'])) * 0.21
+
+    table_data = [
+        ["Totaal excl. BTW", round(totaal_excl_btw, 2)],
+        ["BTW 9%", round(btw_9, 2)],
+        ["BTW 21%", round(btw_21, 2)],
+        ["Totaal incl. BTW", round(totaal_excl_btw + btw_9 + btw_21, 2)]
+    ]
+
+    summary_table = Table(table_data, colWidths=[100, 100])
+
+    summary_table.setStyle(TableStyle([
+        ('GRID', (1, 0), (1, -1), 1, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+    ]))
+    summary_table.hAlign = 'RIGHT'
+
+    elements.append(summary_table)
+
+    elements.append(Spacer(2, 80))
+
+    elements.append(Paragraph(f"<strong>{invoice_data['bedrijfsnaam']}</strong>", centered_normal_style))
+    elements.append(Spacer(1, 12))
+    elements.append(Paragraph(f"Verzoekt u vriendelijk om het bedrag uiterlijk over te maken voor de vervaldatum naar rekeningnummer: NL01KNAB01234652314 ten name van {invoice_data['bedrijfsnaam']} onder vermelding van bovenstaand factuurnummer", centered_normal_style))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph(f"KVK 91256834356 | BTW NL001234524235B66 | IBAN NL01KNAB01234652314", centered_normal_style))
+
     pdf.build(elements)
     pdf_content = buffer.getvalue()
     buffer.close()
+
+    with open("test_invoice.pdf", "wb") as f:
+        f.write(pdf_content)
 
     return pdf_content
 
@@ -113,7 +222,7 @@ def create_invoice(db: Session, invoice: schemas.InvoiceCreate):
     db.commit()   
     db.close()
 
-    return invoicedb
+    return schemas.Invoice.model_construct(invoicedb)
 
 def update_invoice(db: Session, invoice: schemas.InvoiceCreate, invoice_id = int):
 

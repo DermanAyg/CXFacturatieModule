@@ -20,13 +20,12 @@ class InvoiceBase(BaseModel):
     number: Optional[str]
     uploaded_at: Optional[str]
     last_activity: Optional[str]
-    file: Optional[bytes]
     status: Optional[str]
     user_id: Optional[int]
     remarks: List[Remark] = []
 
 class InvoiceCreate(InvoiceBase):
-    pass
+    file: Optional[bytes]
 
 class Invoice(InvoiceBase):
     id: int

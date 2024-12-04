@@ -74,7 +74,8 @@ class Invoice(Base):
     remarks = relationship("Remark", back_populates="invoice")
 
     def __repr__(self):
-        return f"<Invoice(id={self.id}, number='{self.number}', uploaded_at='{self.uploaded_at}', last_activity='{self.last_activity}', file='{self.file}', status='{self.status}', user_id={self.user_id})>"
+        file_info = f"{len(self.file)} bytes" if isinstance(self.file, bytes) else "No file"
+        return f"<Invoice(id={self.id}, number='{self.number}', uploaded_at='{self.uploaded_at}', last_activity='{self.last_activity}', file='{file_info}', status='{self.status}', user_id={self.user_id})>"
 
 class Remark(Base):
     __tablename__ = "Remark"
