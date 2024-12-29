@@ -272,7 +272,10 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).options(joinedload(models.User.invoices)).offset(skip).limit(limit).all()
 
 def get_user(db: Session, user_id: int):
-    return db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.id == user_id).first() 
+    return db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.id == user_id).first()
+
+def get_user_by_email(db: Session, user_email: str):
+    return db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.username == user_email).first()
 
 def create_user(db: Session, user: schemas.UserCreate):
 

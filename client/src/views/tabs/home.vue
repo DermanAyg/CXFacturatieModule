@@ -2,86 +2,82 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <!-- TODO: add date for recent invoices, 5days<invoice_date = recent invoice -->
-      <div v-if="loggedinuser.role === 'admin'" id="container" class="container">
-        <div class="section_block">
-          <h2 class="section_title">Recente facturen</h2>
-        <p>----------------------</p>
-        <pre v-if="isAuthenticated">
-          <code>{{ user }}</code>
-        </pre>
-        <p>----------------------</p>
-          <div class="invoices_wrapper">
-            <div>
-              <div v-for="invoice in initialInvoices">
-                <div v-if="invoice.status == 'open'" class="invoice_wrapper">
-                <div class="invoice_status_wrapper">
-                  <div>
-                    <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                    <p class="invoice_wrapper_subtitle">{{ loggedinuser.firstname }} {{ loggedinuser.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
-                  </div>
-                  <div>
-                    <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
-                  </div>
-                </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="section_block">
-          <h2 class="section_title">Open facturen</h2>
-          <div class="invoices_wrapper">
-            <div>
-              <div v-for="invoice in initialInvoices">
-                <div v-if="invoice.status == 'open'" class="invoice_wrapper">
-                <div class="invoice_status_wrapper">
-                  <div>
-                    <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                    <p class="invoice_wrapper_subtitle">{{ loggedinuser.firstname }} {{ loggedinuser.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
-                  </div>
-                  <div>
-                    <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
-                  </div>
-                </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else-if="loggedinuser.role === 'user'" id="container" class="container">
-        <div class="section_block">
-          <h2 class="section_title">Mijn facturen</h2>
-          <div class="invoices_wrapper">
-            <div>
-              <div v-for="invoice in initialInvoices">
-                <div v-if="invoice.status == 'closed'" class="invoice_wrapper">
-                <div class="invoice_status_wrapper">
-                  <div>
-                    <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                    <p class="invoice_wrapper_subtitle">{{ loggedinuser.firstname }} {{ loggedinuser.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
-                  </div>
-                  <div>
-                    <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
-                  </div>
-                </div>
-                </div>
-                <div v-else-if="invoice.status == 'open'" class="invoice_wrapper">
+        <div v-if="isAdmin" id="container" class="container">
+          <div class="section_block">
+            <h2 class="section_title">Recente facturen</h2>
+            <div class="invoices_wrapper">
+              <div>
+                <div v-for="invoice in initialInvoices">
+                  <div v-if="invoice.status == 'open'" class="invoice_wrapper">
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                      <p class="invoice_wrapper_subtitle">{{ loggedinuser.firstname }} {{ loggedinuser.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
                     </div>
                     <div>
                       <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
                     </div>
                   </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section_block">
+            <h2 class="section_title">Open facturen</h2>
+            <div class="invoices_wrapper">
+              <div>
+                <div v-for="invoice in initialInvoices">
+                  <div v-if="invoice.status == 'open'" class="invoice_wrapper">
+                  <div class="invoice_status_wrapper">
+                    <div>
+                      <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
+                    </div>
+                    <div>
+                      <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
+                    </div>
+                  </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        <div v-else-if="isUser" id="container" class="container">
+          <div class="section_block">
+            <h2 class="section_title">Mijn facturen</h2>
+            <div class="invoices_wrapper">
+              <div>
+                <div v-for="invoice in initialInvoices">
+                  <div v-if="invoice.status == 'closed'" class="invoice_wrapper">
+                  <div class="invoice_status_wrapper">
+                    <div>
+                      <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
+                    </div>
+                    <div>
+                      <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
+                    </div>
+                  </div>
+                  </div>
+                  <div v-else-if="invoice.status == 'open'" class="invoice_wrapper">
+                    <div class="invoice_status_wrapper">
+                      <div>
+                        <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                        <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
+                      </div>
+                      <div>
+                        <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
     </ion-content>
   </ion-page>
 </template>
@@ -101,31 +97,35 @@
 }
 </style>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import { ref, onMounted  } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSpinner, onIonViewWillEnter } from '@ionic/vue';
+import { ref, onMounted, watch, computed  } from 'vue';
 import axios from 'axios'
 import { alertCircleSharp, checkmarkCircleSharp } from 'ionicons/icons';
 import { useAuth0 } from '@auth0/auth0-vue';
 
 const initialInvoices = ref();
-const loggedinuser = ref({
-  "email": "johnvisser_123@hotmail.com",
-  "firstname": "John",
-  "lastname": "Visser",
-  "role": "admin",
-})
+const loggedinuser = ref()
+const userProfile = ref()
+
+const isAdmin = computed(() => loggedinuser.value?.role === 'admin');
+const isUser = computed(() => loggedinuser.value?.role === 'user');
 
 const auth0 = useAuth0();
-const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
-const logoutParams = { returnTo: window.location.origin + '/login' };
-
-function user_logout() {
-  logout({ logoutParams });
-}
+const { user, isAuthenticated } = useAuth0();
 
 async function fetchInitialInvoices() {
   const response = await axios.get<[]>('http://127.0.0.1:8000/invoice/')
   initialInvoices.value = response.data
+}
+
+async function fetchLoggedInUser() {
+  const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
+  return response.data
+}
+
+async function fetchUserProfile(profileId: any) {
+    const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=2')
+    return response.data
 }
 
 function parseDate(dateString: string) {
@@ -144,13 +144,28 @@ function parseDateToString(dateString: string) {
   return `${day}-${month}-${year}, ${hours}:${minutes}`;
 }
 
-onMounted(async () => {
+onIonViewWillEnter(async () => {
+  loggedinuser.value = null;
+  userProfile.value = null;
+  initialInvoices.value = null;
+
+  if (isAuthenticated.value && user.value?.email) {
+    loggedinuser.value = await fetchLoggedInUser();
+    userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+  }
   await fetchInitialInvoices();
   initialInvoices.value.sort((a: any, b: any) => {
     const dateA: any = parseDate(a.last_activity);
     const dateB: any = parseDate(b.last_activity);
     return dateB - dateA;
   });
+});
+
+watch([isAuthenticated, user], async ([authenticated, userInfo]) => {
+  if (authenticated && userInfo?.email) {
+    loggedinuser.value = await fetchLoggedInUser();
+    userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+  }
 });
 
 </script>

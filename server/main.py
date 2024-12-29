@@ -120,6 +120,11 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     user = functions.get_user(db, user_id)
     return user
 
+@app.get("/userbyemail/{username}", response_model=schemas.User, tags=["user"])
+def read_user_by_email(username: str, db: Session = Depends(get_db)):
+    user = functions.get_user_by_email(db, username)
+    return user
+
 @app.post("/user/", status_code=status.HTTP_201_CREATED, tags=["user"])
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     user = functions.create_user(db, user)

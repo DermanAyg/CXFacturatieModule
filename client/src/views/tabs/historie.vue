@@ -8,12 +8,10 @@
               <div>
                 <div v-for="invoice in initialInvoices">
                   <div v-if="invoice.status == 'closed'" class="invoice_wrapper">
-                    <!-- <pre>{{ invoice }}</pre> -->
-
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                      <p class="invoice_wrapper_subtitle">{{ loggedinuser.firstname }} {{ loggedinuser.lastname }}, {{ parseDateToString(invoice.last_activity) }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.firstname }}, {{ parseDateToString(invoice.last_activity) }}</p>
                     </div>
                     <div>
                       <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
@@ -44,18 +42,30 @@
 }
 </style>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import { ref, onMounted  } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter } from '@ionic/vue';
+import { ref, onMounted, watch, computed  } from 'vue';
 import axios from 'axios'
 import { checkmarkCircleSharp } from 'ionicons/icons';
+import { useAuth0 } from '@auth0/auth0-vue';
 
 const initialInvoices = ref();
-const loggedinuser = ref({
-  "email": "johnvisser_123@hotmail.com",
-  "firstname": "John",
-  "lastname": "Visser",
-  "role": "user",
-})
+const loggedinuser = ref()
+const userProfile = ref()
+
+const isAdmin = computed(() => loggedinuser.value?.role === 'admin');
+const isUser = computed(() => loggedinuser.value?.role === 'user');
+const auth0 = useAuth0();
+const { user, isAuthenticated } = useAuth0();
+
+async function fetchLoggedInUser() {
+  const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
+  return response.data
+}
+
+async function fetchUserProfile(profileId: any) {
+    const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=2')
+    return response.data
+}
 
 async function fetchInitialInvoices() {
   const response = await axios.get<[]>('http://127.0.0.1:8000/invoice/')
@@ -78,13 +88,28 @@ function parseDateToString(dateString: string) {
   return `${day}-${month}-${year}, ${hours}:${minutes}`;
 }
 
-onMounted(async () => {
+onIonViewWillEnter(async () => {
+  loggedinuser.value = null;
+  userProfile.value = null;
+  initialInvoices.value = null;
+
+  if (isAuthenticated.value && user.value?.email) {
+    loggedinuser.value = await fetchLoggedInUser();
+    userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+  }
   await fetchInitialInvoices();
   initialInvoices.value.sort((a: any, b: any) => {
     const dateA: any = parseDate(a.last_activity);
     const dateB: any = parseDate(b.last_activity);
     return dateB - dateA;
   });
+});
+
+watch([isAuthenticated, user], async ([authenticated, userInfo]) => {
+  if (authenticated && userInfo?.email) {
+    loggedinuser.value = await fetchLoggedInUser();
+    userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+  }
 });
 
 </script>

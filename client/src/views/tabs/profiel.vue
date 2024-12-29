@@ -14,7 +14,7 @@
                   </div>
                 </ion-col>
                 <ion-col size="10" style="padding-left: 25px;">
-                  <h2 style="margin-bottom: 5px;margin-top:0px;">{{ loggedinuser?.firstname}} {{ loggedinuser?.lastname}}</h2>
+                  <h2 style="margin-bottom: 5px;margin-top:0px;">{{ userProfile?.firstname}} {{ userProfile?.lastname}}</h2>
                   <p style="margin: 0px;">{{ loggedinuser?.role }}</p>
                 </ion-col>
               </ion-row>
@@ -26,11 +26,11 @@
           <h2 class="section_title">Gegevens</h2>
           <div class="profile_wrapper">
             <ul>
-              <li>{{ initialProfile?.phone }}</li>
-              <li>{{ initialProfile?.email }}</li>
-              <li>{{ initialProfile?.date_of_birth }}</li>
-              <li>{{ initialProfile?.address }}</li>
-              <li>{{ initialProfile?.gender }}</li>
+              <li>{{ userProfile?.phone }}</li>
+              <li>{{ userProfile?.email }}</li>
+              <li>{{ userProfile?.date_of_birth }}</li>
+              <li>{{ userProfile?.address }}</li>
+              <li>{{ userProfile?.gender }}</li>
             </ul>
             <div class="edit_profile_btn_wrapper">
               <div class="edit_profile_background" @click="updateProfileToggler()">
@@ -39,7 +39,7 @@
             </div>
           </div>
         </div>
-        <div v-if="loggedinuser.role === 'admin'" class="section_block">
+        <div v-if="isAdmin" class="section_block">
           <h2 class="section_title">Personeel</h2>
           <div class="profile_wrapper">
             <ul>
@@ -50,7 +50,7 @@
             </ul>
           </div>
         </div>
-        <div v-if="loggedinuser.role === 'admin'" class="section_block">
+        <div v-if="isAdmin" class="section_block">
           <h2 class="section_title">Facturen</h2>
           <div class="profile_wrapper">
             <ul>
@@ -186,14 +186,13 @@
 }
 </style>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import { ref, onMounted, watch } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter } from '@ionic/vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios'
 import { alertCircleSharp, checkmarkCircleSharp, personCircleSharp, settingsSharp } from 'ionicons/icons';
 import { useAuth0 } from '@auth0/auth0-vue';
 import router from '@/router';
 
-const initialProfile = ref();
 const updatedProfile = ref({
   "firstname": "",
   "lastname": "",
@@ -204,15 +203,14 @@ const updatedProfile = ref({
   "address": ""
 });
 
-const loggedinuser = ref({
-  "email": "johnvisser_123@hotmail.com",
-  "firstname": "John",
-  "lastname": "Visser",
-  "role": "admin",
-})
+const loggedinuser = ref()
+const userProfile = ref()
+
+const isAdmin = computed(() => loggedinuser.value?.role === 'admin');
+const isUser = computed(() => loggedinuser.value?.role === 'user');
 
 const auth0 = useAuth0();
-const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
+const { logout, user, isAuthenticated } = useAuth0();
 const logoutParams = { returnTo: window.location.origin + '/login' };
 
 function user_logout() {
@@ -235,7 +233,7 @@ function updateProfileToggler() {
 
 async function updateProfile() {
   try {
-    const response = await axios.put('http://127.0.0.1:8000/profile/?profile_id=1', updatedProfile.value,
+    const response = await axios.put('http://127.0.0.1:8000/profile/?profile_id=' + loggedinuser.value.profile_id, updatedProfile.value,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -248,18 +246,30 @@ async function updateProfile() {
   location.reload();
 }
 
-async function fetchInitialProfile() {
-  const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=1')
-  initialProfile.value = response.data
+async function fetchLoggedInUser() {
+  const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
+  return response.data
 }
 
-watch(initialProfile, (newProfile) => {
-  if (newProfile) {
-    updatedProfile.value = { ...newProfile };
+async function fetchUserProfile(profileId: any) {
+    const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=' + loggedinuser.value.profile_id)
+    return response.data
+}
+
+onIonViewWillEnter(async () => {
+  loggedinuser.value = null;
+  userProfile.value = null;
+
+  if (isAuthenticated.value && user.value?.email) {
+    loggedinuser.value = await fetchLoggedInUser();
+    userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
   }
 });
 
-onMounted(async () => {
-  await fetchInitialProfile();
+watch([isAuthenticated, user], async ([authenticated, userInfo]) => {
+  if (authenticated && userInfo?.email) {
+    loggedinuser.value = await fetchLoggedInUser();
+    userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+  }
 });
 </script>

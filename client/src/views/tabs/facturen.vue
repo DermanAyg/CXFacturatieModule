@@ -623,14 +623,24 @@
     IonList } from '@ionic/vue';
   import { OverlayEventDetail } from '@ionic/core/components';
   import { add, alertCircleSharp, arrowBackOutline, arrowBackSharp, arrowForwardOutline, chatbubbleEllipsesOutline, chatbubbleEllipsesSharp, checkmarkCircleSharp, closeSharp, ellipsisHorizontalOutline } from 'ionicons/icons';
-  import { ref, onMounted  } from 'vue';
+  import { ref, onMounted, watch, computed  } from 'vue';
   import axios from 'axios'
+  import { useAuth0 } from '@auth0/auth0-vue';
 
   const modal = ref();
   const input = ref();
   const searchInvoice = ref();
-  const initialInvoices = ref();
   let selectedInvoice = ref();
+
+  const initialInvoices = ref();
+  const loggedinuser = ref()
+  const userProfile = ref()
+
+  const isAdmin = computed(() => loggedinuser.value?.role === 'admin');
+  const isUser = computed(() => loggedinuser.value?.role === 'user');
+
+  const auth0 = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
 
   const cancel = () => modal.value.$el.dismiss(null, 'cancel');
 
@@ -755,8 +765,30 @@
     location.reload();
   }
 
+  async function fetchLoggedInUser() {
+    const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
+    return response.data
+  }
+
+  async function fetchUserProfile(profileId: any) {
+      const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=2')
+      return response.data
+  }
+
   onMounted(async () => {
-        await fetchInitialInvoices()
-    })
+    await fetchInitialInvoices()
+  })
+
+  watch([isAuthenticated, user], async ([authenticated, userInfo]) => {
+    if (authenticated && userInfo?.email) {
+      loggedinuser.value = await fetchLoggedInUser();
+      userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+    }
+  });
+
+  const loading = ref(true);
+  watch(loggedinuser, (newVal) => {
+    if (newVal) loading.value = false;
+  });
 
 </script>

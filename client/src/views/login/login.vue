@@ -18,7 +18,7 @@
   </ion-page>
 </template>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonSpinner } from '@ionic/vue';
 import { computed, onMounted, watchEffect } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
 import router from '@/router';
