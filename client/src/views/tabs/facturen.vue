@@ -4,9 +4,10 @@
         <div id="container" class="container">
 
           <!-- MODAL INVOICE GENERATION BEGIN -->
-          <ion-modal ref="modal" trigger="factuur_aanmaak_modal" @willDismiss="onWillDismiss">
+          <ion-modal ref="modal" trigger="factuur_aanmaak_modal">
             <ion-header>
               <ion-toolbar>
+                <ion-icon class="invoice_back_btn" :icon="arrowBackSharp" @click="cancel()" style="color: #FFF;"></ion-icon>
                 <ion-title style="text-align: center;">Factuur aanmaken</ion-title>
               </ion-toolbar>
             </ion-header>
@@ -157,11 +158,27 @@
                       <ion-icon v-else :icon="checkmarkCircleSharp" style="font-size: 28px;color: #0AA34F;"></ion-icon>
                     </ion-col>
                     <ion-col class="modal_invoice_wrapper_header_col_right">
-                      <ion-icon :icon="ellipsisHorizontalOutline" style="font-size: 28px;color: #CD7130;cursor:pointer;"></ion-icon>
+                      <ion-icon @click="InvoiceOptionsToggler()" :icon="ellipsisHorizontalOutline" style="font-size: 28px;color: #CD7130;cursor:pointer;"></ion-icon>
                     </ion-col>
                   </ion-row>
                 </ion-grid>
               </div>
+
+              <!-- INVOICE OPTIONS MODAL BEGIN -->
+              <div id="modal_invoice_options" name="modal_invoice_options" class="md modal-default modal_invoice_options" 
+                style="display: none;">
+                <div class="modal_invoice_options_wrapper">
+                  <div class="options_wrapper">
+                    <ul class="options_wrapper_ul">
+                      <li>Delen <span>@</span></li>
+                      <li>Wijzigen <span>@</span></li>
+                      <li>Verwijderen <span>@</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- INVOICE OPTIONS MODAL END -->
+
               <div style="width: 90%;margin-top: 25px;">
                 <div class="invoice_wrapper">
                   <div class="invoice_status_wrapper">
@@ -175,8 +192,9 @@
               <div style="display:flex;width: 90%;margin-top: 25px;">
                 <div style="background-color:white;height:500px;width:75%;">
 
-                  <iframe src="/test_invoice.pdf#zoom=67" width="100%" height="100%" frameborder="0"></iframe>
-
+                  <iframe v-if="selectedInvoice?.fileUrl !== ''" id="invoiceIframe" width="100%" height="100%" frameborder="0"></iframe>
+                  <p style="color: black;font-size: 13px;padding: 0px 10px;" v-else>An error occured while trying to get the invoice, please contact the support team.</p>
+                  
                 </div>
                 <div style="display: flex;align-items: flex-end;">
                   <ion-icon :icon="chatbubbleEllipsesSharp" @click="InvoiceRemarksToggler()" style="color: #CD7130;font-size:52px;margin-left: 25px;cursor: pointer;"></ion-icon>
@@ -256,6 +274,7 @@
               <template v-if="searchInvoice">
                 <div>
                     <div v-for="invoice in initialInvoices">
+                      
                       <div v-if="invoice['number'].includes(searchInvoice) && invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
 
                         <div class="invoice_status_wrapper">
@@ -264,7 +283,7 @@
                             <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
                           </div>
                           <div>
-                            <ion-icon class="invoice-icon-green" :icon="alertCircleSharp" style="font-size: 28px;color: #CD7130;padding-right: 25px;padding-top: 4px;"></ion-icon>
+                            <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
                           </div>
                         </div>
 
@@ -275,13 +294,14 @@
               
               <template v-else v-for="invoice in initialInvoices">
                 <div v-if="invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                  <!-- <pre>{{ invoice }}</pre> -->
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
                       <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
                     </div>
                     <div>
-                      <ion-icon class="invoice-icon-green" :icon="alertCircleSharp" style="font-size: 28px;color: #CD7130;padding-right: 25px;padding-top: 4px;"></ion-icon>
+                      <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
                     </div>
                   </div>
                 </div>
@@ -297,7 +317,7 @@
               <template v-if="searchInvoice">
                 <div>
                     <div v-for="invoice in initialInvoices">
-                      <div v-if="invoice['number'].includes(searchInvoice)" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                      <div v-if="invoice['number'].includes(searchInvoice) && invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
 
                       <div class="invoice_status_wrapper">
                         <div>
@@ -305,7 +325,7 @@
                           <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
                         </div>
                         <div>
-                          <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp" style="font-size: 28px;color: #0AA34F;padding-right: 25px;padding-top: 4px;"></ion-icon>
+                          <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
                         </div>
                       </div>
 
@@ -322,7 +342,7 @@
                       <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
                     </div>
                     <div>
-                      <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp" style="font-size: 28px;color: #0AA34F;padding-right: 25px;padding-top: 4px;"></ion-icon>
+                      <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
                     </div>
                   </div>
                 </div>
@@ -335,10 +355,10 @@
     </ion-page>
   </template>
 <style>
-.vw10 {width: 10vw !important;}
-.vw15 {width: 15vw !important;}
-.vw20 {width: 20vw !important;}
-.vw40 {width: 40vw !important;}
+.vw10 {width: 10lvw}
+.vw15 {width: 15vw}
+.vw20 {width: 20vw}
+.vw40 {width: 40vw}
 
 .cus_section_block_options {
   min-width: 90%;
@@ -503,6 +523,7 @@
   width: 40%;
   display: flex;
   flex-flow: column;
+  z-index: 1000000;
 }
 .remark_wrapper {
   display: flex;
@@ -550,6 +571,39 @@
   padding: 7px 10px;
   font-size: 13px;
 }
+.invoice_back_btn {
+  position: absolute;
+  font-size: 16px;
+  top: 20px;
+  left: 15px;
+  z-index: 1000;
+  cursor: pointer;
+  color: #E4833F!important;
+  font-size: 20px!important;
+}
+.modal_invoice_options {
+  display: flex;
+  position: absolute;
+  margin-top: 50px;
+  margin-left: 30vw;
+  z-index: 100000;
+  background-color: #1F1F1F;
+}
+.options_wrapper_ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.options_wrapper_ul li {
+  display: flex;
+  justify-content: space-between;
+  width: 170px;
+  padding: 7px 7px;
+}
+.options_wrapper_ul li:hover {
+  cursor: pointer;
+  background-color: #1c1c1c;
+}
 </style>
 <script setup lang="ts">
   import { 
@@ -568,7 +622,7 @@
     IonInput,
     IonList } from '@ionic/vue';
   import { OverlayEventDetail } from '@ionic/core/components';
-  import { add, alertCircleSharp, arrowBackOutline, arrowForwardOutline, chatbubbleEllipsesOutline, chatbubbleEllipsesSharp, checkmarkCircleSharp, closeSharp, ellipsisHorizontalOutline } from 'ionicons/icons';
+  import { add, alertCircleSharp, arrowBackOutline, arrowBackSharp, arrowForwardOutline, chatbubbleEllipsesOutline, chatbubbleEllipsesSharp, checkmarkCircleSharp, closeSharp, ellipsisHorizontalOutline } from 'ionicons/icons';
   import { ref, onMounted  } from 'vue';
   import axios from 'axios'
 
@@ -577,6 +631,9 @@
   const searchInvoice = ref();
   const initialInvoices = ref();
   let selectedInvoice = ref();
+
+  const cancel = () => modal.value.$el.dismiss(null, 'cancel');
+
   const FormData = ref({
     "bedrijfsnaam": "",
     "voornaam": "",
@@ -595,17 +652,71 @@
     "factuurdatum": "",
     "vervaldatum": "",
     "btw-nummer": "",
-    "producten": [{}],
+    "producten": [{
+      "hoeveelheid": "",
+      "omschrijving": "",
+      "btw": "",
+      "prijs": "",
+    }],
   })
 
   function InvoiceToggler(invoice: any) {
     var modal = document.getElementById("modal_invoice");
     selectedInvoice.value = invoice;
 
+    if (invoice?.fileUrl) {
+      // Set the iframe source to the file URL
+      document.getElementById('invoiceIframe').src = invoice.fileUrl;
+    }
+
     if (modal?.style.display === "none") {
       modal.style.display = "flex";
     } else if (modal?.style.display === "flex") {
       modal.style.display = "none";
+    }
+  }
+
+  async function fetchInitialInvoices() {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/invoice/');
+      initialInvoices.value = response.data;
+
+      // For each invoice, convert the `file` (Base64) to a Blob URL
+      initialInvoices.value.forEach((invoice: { file: any; fileUrl: string; }) => {
+        if (invoice.file) {
+          invoice.fileUrl = convertBase64ToPdfUrl(invoice.file);
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching invoices:', error);
+    }
+  }
+
+  function convertBase64ToPdfUrl(base64String: any) {
+    const binary = atob(base64String); // Decode the base64 string
+    const array = [];
+    const emptyFileSignature = "c3RyaW5n"; // Base64 for "string"
+    
+    if (base64String.includes(emptyFileSignature)) {
+      return '';
+    }
+
+    for (let i = 0; i < binary.length; i++) {
+      array.push(binary.charCodeAt(i));
+    }
+    const blob = new Blob([new Uint8Array(array)], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob); // Return the URL for the blob
+
+    return `${url}#zoom=50`;
+  }
+
+  function InvoiceOptionsToggler() {
+    var options_modal = document.getElementById("modal_invoice_options");
+
+    if (options_modal?.style.display == "none") {
+      options_modal.style.display = "flex";
+    } else if (options_modal?.style.display == "flex") {
+      options_modal.style.display = "none";
     }
   }
 
@@ -617,11 +728,6 @@
     } else if (remarks_modal?.style.display === "flex") {
       remarks_modal.style.display = "none";
     }
-  }
-
-  async function fetchInitialInvoices() {
-    const response = await axios.get<[]>('http://127.0.0.1:8000/invoice/')
-    initialInvoices.value = response.data
   }
 
   function addRow() {
@@ -646,6 +752,7 @@
     } catch (error) {
       console.error("Error:", error);
     }
+    location.reload();
   }
 
   onMounted(async () => {

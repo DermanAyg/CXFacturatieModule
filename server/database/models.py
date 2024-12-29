@@ -10,6 +10,10 @@ class Company(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, index=True, nullable=True)
+    postcode = Column(String, index=True, nullable=True)
+    plaats = Column(String, index=True, nullable=True)
+    straat = Column(String, index=True, nullable=True)
+    huisnr = Column(String, index=True, nullable=True)
     email = Column(String, unique=True, index=True, nullable=True)
     mobile = Column(String, unique=True, index=True, nullable=True)
     emergency_phone = Column(String, unique=True, index=True, nullable=True)

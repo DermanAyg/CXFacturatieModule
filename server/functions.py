@@ -10,6 +10,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from fastapi.encoders import jsonable_encoder
 
 from database import models, schemas
 
@@ -203,10 +204,22 @@ def delete_company(db: Session, company_id: int):
 # invoice
 
 def get_invoices(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).offset(skip).limit(limit).all()
+    invoices = db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).offset(skip).limit(limit).all()
+
+    for invoice in invoices:
+        if invoice.file:
+            invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
+
+    return jsonable_encoder(invoices)
 
 def get_invoice(db: Session, invoice_id: int):
-    return db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).filter(models.Invoice.id == invoice_id).first()
+    invoice = db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).filter(models.Invoice.id == invoice_id).first()
+        
+    if invoice.file:
+        invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
+    
+    return jsonable_encoder(invoice)
+
 
 def create_invoice(db: Session, invoice: schemas.InvoiceCreate):
 

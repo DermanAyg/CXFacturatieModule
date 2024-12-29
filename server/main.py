@@ -10,6 +10,7 @@ from sqlalchemy import JSON, desc, update
 from fastapi.responses import Response
 import functions
 import json
+from datetime import datetime
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -38,11 +39,12 @@ def get_db():
 @app.post("/generate-invoice/", status_code=status.HTTP_201_CREATED, tags=["Etc"])
 def generate_invoice(data: Dict[str, Any], db: Session = Depends(get_db)):
     generated_invoice = functions.generate_invoice(data)
+    now = datetime.now()
 
     functions.create_invoice(db, models.Invoice(
         number=data['factuurnummer'],
-        uploaded_at=None,
-        last_activity=None,
+        uploaded_at=now.strftime("%d-%m-%Y, %H:%M:%S"),
+        last_activity=now.strftime("%d-%m-%Y, %H:%M:%S"),
         file=generated_invoice,
         status="open",
         user_id=None

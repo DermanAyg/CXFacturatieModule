@@ -1,5 +1,6 @@
 from pydantic import BaseModel # type: ignore
 from typing import Union, List, Optional
+import base64
 
 class RemarkBase(BaseModel):
     description: Optional[str]
@@ -23,9 +24,22 @@ class InvoiceBase(BaseModel):
     status: Optional[str]
     user_id: Optional[int]
     remarks: List[Remark] = []
+    file: Optional[str]
+
+    @staticmethod
+    def encode_file(file_data: Optional[bytes]) -> Optional[str]:
+        if file_data:
+            return base64.b64encode(file_data).decode('utf-8')
+        return None
+
+    @staticmethod
+    def decode_file(file_data: Optional[str]) -> Optional[bytes]:
+        if file_data:
+            return base64.b64decode(file_data)
+        return None
 
 class InvoiceCreate(InvoiceBase):
-    file: Optional[bytes]
+    pass
 
 class Invoice(InvoiceBase):
     id: int
@@ -56,6 +70,10 @@ class User(UserBase):
 
 class CompanyBase(BaseModel):
     name: Optional[str]
+    postcode: Optional[str]
+    plaats: Optional[str]
+    straat: Optional[str]
+    huisnr: Optional[str]
     email: Optional[str]
     mobile: Optional[str]
     emergency_phone: Optional[str]

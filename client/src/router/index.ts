@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/login',
   },
   {
-    path: '/login/',
+    path: '/login',
     component: login,
   },
   {
