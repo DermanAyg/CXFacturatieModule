@@ -88,6 +88,11 @@ def read_invoice(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
     invoices = functions.get_invoices(db, skip=skip, limit=limit)
     return invoices
 
+@app.get("/invoice/{user_id}", response_model=list[schemas.Invoice], tags=["invoice"])
+def read_invoice_by_user_id(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    invoices = functions.get_invoices_by_user_id(db, user_id, skip=skip, limit=limit)
+    return invoices
+
 @app.get("/invoice/{id}", response_model=schemas.Invoice, tags=["invoice"])
 def read_invoice(invoice_id: int, db: Session = Depends(get_db)):
     invoice = functions.get_invoice(db, invoice_id)

@@ -262,6 +262,7 @@
 
           <div class="section_block">
             <h2 class="section_title">Factuur zoeken</h2>
+            <pre>{{ loggedinuser }}</pre>
             <div class="searchbar_wrapper" style="display: flex;">
               <input v-model="searchInvoice" class="searchbar_input" type="text" name="search_invoice" />
             </div>
@@ -273,7 +274,7 @@
 
               <template v-if="searchInvoice">
                 <div>
-                    <div v-for="invoice in initialInvoices">
+                    <div v-for="invoice in loggedinuser?.invoices">
                       
                       <div v-if="invoice['number'].includes(searchInvoice) && invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
 
@@ -292,7 +293,7 @@
                   </div>
               </template>
               
-              <template v-else v-for="invoice in initialInvoices">
+              <template v-else v-for="invoice in loggedinuser?.invoices">
                 <div v-if="invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <!-- <pre>{{ invoice }}</pre> -->
                   <div class="invoice_status_wrapper">
@@ -316,7 +317,7 @@
 
               <template v-if="searchInvoice">
                 <div>
-                    <div v-for="invoice in initialInvoices">
+                    <div v-for="invoice in loggedinuser?.invoices">
                       <div v-if="invoice['number'].includes(searchInvoice) && invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
 
                       <div class="invoice_status_wrapper">
@@ -334,7 +335,7 @@
                   </div>
               </template>
               
-              <template v-else v-for="invoice in initialInvoices">
+              <template v-else v-for="invoice in loggedinuser?.invoices">
                 <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <div class="invoice_status_wrapper">
                     <div>
@@ -688,8 +689,8 @@
 
   async function fetchInitialInvoices() {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/invoice/');
-      initialInvoices.value = response.data;
+      // const response = await axios.get('http://127.0.0.1:8000/invoice/user_id=' + await loggedinuser.value?.id);
+      initialInvoices.value = loggedinuser.value.invoices;
 
       // For each invoice, convert the `file` (Base64) to a Blob URL
       initialInvoices.value.forEach((invoice: { file: any; fileUrl: string; }) => {
@@ -774,10 +775,6 @@
       const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=2')
       return response.data
   }
-
-  onMounted(async () => {
-    await fetchInitialInvoices()
-  })
 
   watch([isAuthenticated, user], async ([authenticated, userInfo]) => {
     if (authenticated && userInfo?.email) {

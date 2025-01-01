@@ -212,6 +212,15 @@ def get_invoices(db: Session, skip: int = 0, limit: int = 100):
 
     return jsonable_encoder(invoices)
 
+def get_invoices_by_user_id(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    invoices = db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).filter(models.Invoice.user_id == user_id).offset(skip).limit(limit).all()
+
+    for invoice in invoices:
+        if invoice.file:
+            invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
+
+    return jsonable_encoder(invoices)
+
 def get_invoice(db: Session, invoice_id: int):
     invoice = db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).filter(models.Invoice.id == invoice_id).first()
         
@@ -219,7 +228,6 @@ def get_invoice(db: Session, invoice_id: int):
         invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
     
     return jsonable_encoder(invoice)
-
 
 def create_invoice(db: Session, invoice: schemas.InvoiceCreate):
 
