@@ -277,13 +277,37 @@ def delete_invoice(db: Session, invoice_id: int):
 # user
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).options(joinedload(models.User.invoices)).offset(skip).limit(limit).all()
+    users = db.query(models.User).options(joinedload(models.User.invoices)).offset(skip).limit(limit).all()
+    
+    for user in users:
+        for invoice in user.invoices:
+            if invoice:
+                invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
+    jsonable_encoder(user.invoices)
+
+    return users
 
 def get_user(db: Session, user_id: int):
-    return db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.id == user_id).first()
+    user = db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.id == user_id).first()
+
+    for invoice in user.invoices:
+        if invoice:
+            invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
+
+    jsonable_encoder(user.invoices)
+
+    return user
 
 def get_user_by_email(db: Session, user_email: str):
-    return db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.username == user_email).first()
+    user = db.query(models.User).options(joinedload(models.User.invoices)).filter(models.User.username == user_email).first()
+    
+    for invoice in user.invoices:
+        if invoice:
+            invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
+
+    jsonable_encoder(user.invoices)
+
+    return user
 
 def create_user(db: Session, user: schemas.UserCreate):
 

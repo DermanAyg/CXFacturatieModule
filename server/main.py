@@ -47,7 +47,7 @@ def generate_invoice(data: Dict[str, Any], db: Session = Depends(get_db)):
         last_activity=now.strftime("%d-%m-%Y, %H:%M:%S"),
         file=generated_invoice,
         status="open",
-        user_id=None
+        user_id=data['user_id']
     ))
 
     return f"created invoice"
@@ -89,7 +89,7 @@ def read_invoice(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
     return invoices
 
 @app.get("/invoice/{user_id}", response_model=list[schemas.Invoice], tags=["invoice"])
-def read_invoice_by_user_id(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_invoice(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     invoices = functions.get_invoices_by_user_id(db, user_id, skip=skip, limit=limit)
     return invoices
 

@@ -262,7 +262,7 @@
 
           <div class="section_block">
             <h2 class="section_title">Factuur zoeken</h2>
-            <pre>{{ loggedinuser }}</pre>
+            <pre>{{ FormData }}</pre>
             <div class="searchbar_wrapper" style="display: flex;">
               <input v-model="searchInvoice" class="searchbar_input" type="text" name="search_invoice" />
             </div>
@@ -663,6 +663,7 @@
     "factuurdatum": "",
     "vervaldatum": "",
     "btw-nummer": "",
+    "user_id": "",
     "producten": [{
       "hoeveelheid": "",
       "omschrijving": "",
@@ -684,22 +685,6 @@
       modal.style.display = "flex";
     } else if (modal?.style.display === "flex") {
       modal.style.display = "none";
-    }
-  }
-
-  async function fetchInitialInvoices() {
-    try {
-      // const response = await axios.get('http://127.0.0.1:8000/invoice/user_id=' + await loggedinuser.value?.id);
-      initialInvoices.value = loggedinuser.value.invoices;
-
-      // For each invoice, convert the `file` (Base64) to a Blob URL
-      initialInvoices.value.forEach((invoice: { file: any; fileUrl: string; }) => {
-        if (invoice.file) {
-          invoice.fileUrl = convertBase64ToPdfUrl(invoice.file);
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching invoices:', error);
     }
   }
 
@@ -780,12 +765,27 @@
     if (authenticated && userInfo?.email) {
       loggedinuser.value = await fetchLoggedInUser();
       userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+
+      loggedinuser.value.invoices.forEach((invoice: { file: any; fileUrl: string; }) => {
+        if (invoice.file) {
+          invoice.fileUrl = convertBase64ToPdfUrl(invoice.file);
+        }
+      });
+
     }
   });
 
   const loading = ref(true);
   watch(loggedinuser, (newVal) => {
     if (newVal) loading.value = false;
+  });
+
+  watch(
+  () => loggedinuser.value?.id,
+  (newId) => {
+    if (newId) {
+      FormData.value['user_id'] = newId;
+    }
   });
 
 </script>

@@ -44,7 +44,7 @@ class User(Base):
     invoices = relationship("Invoice", back_populates="user")
     
     def __repr__(self):
-        return f"<User(id={self.id}, username='{self.username}', status='{self.status}', last_activity='{self.last_activity}', created_at='{self.created_at}', user_code='{self.user_code}', role='{self.role}', company_id={self.company_id}, profile_id={self.profile_id})>"
+        return f"<User(id={self.id}, invoices='{self.invoices}', username='{self.username}', status='{self.status}', last_activity='{self.last_activity}', created_at='{self.created_at}', user_code='{self.user_code}', role='{self.role}', company_id={self.company_id}, profile_id={self.profile_id})>"
 
 class Profile(Base):
     __tablename__ = "Profile"
