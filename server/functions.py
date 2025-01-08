@@ -19,6 +19,10 @@ from database import models, schemas
 # factuur genereren
 
 def generate_invoice(invoice_data):
+
+    print("$$$$$$$$$$$$$$$$$$$")
+    print(invoice_data)
+
     buffer = io.BytesIO()
     pdf = SimpleDocTemplate(buffer, pagesize=letter)
     elements = []
@@ -56,15 +60,15 @@ def generate_invoice(invoice_data):
 
     elements.append(Paragraph(f"Aan:", right_normal_style))
     elements.append(Paragraph(f"<strong>{invoice_data['klant-naam']}</strong>", right_normal_style))
-    elements.append(Paragraph(f"{invoice_data['klant-straat']} {invoice_data['klant-huisnummer']}", right_normal_style))
-    elements.append(Paragraph(f"{invoice_data['klant-postcode']} {invoice_data['klant-plaats']}", right_normal_style))
+    elements.append(Paragraph(f"{invoice_data['klant-straat']}", right_normal_style))
+    # elements.append(Paragraph(f"{invoice_data['klant-postcode']} {invoice_data['klant-plaats']}", right_normal_style))
    
     elements.append(Spacer(2, 30))
 
     elements.append(Paragraph(f"Van:", right_normal_style))
     elements.append(Paragraph(f"<strong>{invoice_data['bedrijfsnaam']}</strong>", right_normal_style))
-    elements.append(Paragraph(f"{invoice_data['straat']} {invoice_data['huisnummer']}", right_normal_style))
-    elements.append(Paragraph(f"{invoice_data['postcode']} {invoice_data['plaats']}", right_normal_style))
+    elements.append(Paragraph(f"{invoice_data['straat']}", right_normal_style))
+    # elements.append(Paragraph(f"{invoice_data['postcode']} {invoice_data['plaats']}", right_normal_style))
    
     elements.append(Spacer(2, 50))
 

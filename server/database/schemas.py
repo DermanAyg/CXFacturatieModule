@@ -5,6 +5,7 @@ import base64
 class RemarkBase(BaseModel):
     description: Optional[str]
     created_at: Optional[str]
+    created_by: Optional[str]
     status: Optional[str]
     invoice_id: Optional[int]
 

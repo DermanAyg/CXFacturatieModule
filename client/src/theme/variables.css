@@ -78,6 +78,13 @@ http://ionicframework.com/docs/theming/ */
     padding-top: 4px;
 }
 
+ion-button {
+    --background: #e4833f !important;
+    --border-radius: 0;
+    --color: #FFF;
+  }
+  
+
 @media only screen and (min-width: 768px) {
     ion-modal {
         --width: 75%;

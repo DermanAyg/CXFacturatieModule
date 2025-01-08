@@ -87,6 +87,7 @@ class Remark(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     description = Column(String, index=True, nullable=True)
     created_at = Column(String, index=True, nullable=True)
+    created_by = Column(String, index=True, nullable=True)
     status = Column(String, index=True, nullable=True)
     invoice_id = Column(Integer, ForeignKey("Invoice.id"))
 

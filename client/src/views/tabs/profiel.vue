@@ -61,9 +61,9 @@
             </ul>
           </div>
         </div>
-        <div class="section_block">
+        <div class="section_block" style="padding: 15px 15px;">
           <div class="logout_wrapper">
-            <ion-button @click="user_logout">Log out</ion-button>
+            <ion-button class="logout_btn" @click="user_logout">Log out</ion-button>
           </div>
         </div>
       </div>
@@ -184,6 +184,11 @@
   background-color: #CD7130!important;
   color: #FFF;
 }
+.logout_btn {
+  border-radius: 0;
+  color: #FFF;
+  font-size: 12px;
+}
 </style>
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter } from '@ionic/vue';
@@ -192,16 +197,6 @@ import axios from 'axios'
 import { alertCircleSharp, checkmarkCircleSharp, personCircleSharp, settingsSharp } from 'ionicons/icons';
 import { useAuth0 } from '@auth0/auth0-vue';
 import router from '@/router';
-
-const updatedProfile = ref({
-  "firstname": "",
-  "lastname": "",
-  "phone": "",
-  "email": "",
-  "date_of_birth": "",
-  "gender": "",
-  "address": ""
-});
 
 const loggedinuser = ref()
 const userProfile = ref()
@@ -212,6 +207,16 @@ const isUser = computed(() => loggedinuser.value?.role === 'user');
 const auth0 = useAuth0();
 const { logout, user, isAuthenticated } = useAuth0();
 const logoutParams = { returnTo: window.location.origin + '/login' };
+
+const updatedProfile = ref({
+  "firstname": "",
+  "lastname": "",
+  "phone": "",
+  "email": "",
+  "date_of_birth": "",
+  "gender": "",
+  "address": "",
+});
 
 function user_logout() {
   logout({ logoutParams });
@@ -224,6 +229,14 @@ function updateProfileToggler() {
   const computedStyle = window.getComputedStyle(profile_modal);
   const displayValue = computedStyle.display;
 
+  updatedProfile.value['firstname'] = userProfile.value?.firstname;
+  updatedProfile.value['lastname'] = userProfile.value?.lastname;
+  updatedProfile.value['phone'] = userProfile.value?.phone;
+  updatedProfile.value['email'] = userProfile.value?.email;
+  updatedProfile.value['date_of_birth'] = userProfile.value?.date_of_birth;
+  updatedProfile.value['gender'] = userProfile.value?.gender;
+  updatedProfile.value['address'] = userProfile.value?.address;
+
   if (displayValue === "none") {
     profile_modal.style.display = "flex";
   } else if (displayValue === "flex") {
@@ -232,6 +245,8 @@ function updateProfileToggler() {
 }
 
 async function updateProfile() {
+  console.log(loggedinuser.value.profile_id);
+  console.log(updatedProfile.value)
   try {
     const response = await axios.put('http://127.0.0.1:8000/profile/?profile_id=' + loggedinuser.value.profile_id, updatedProfile.value,
       {

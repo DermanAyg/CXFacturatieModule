@@ -13,131 +13,129 @@
             </ion-header>
             <ion-content class="ion-padding">
               <ion-list>
-                <ion-item>
-                  <ion-input v-model="FormData['bedrijfsnaam']" label="Bedrijfsnaam" label-placement="stacked" ref="input" type="text" placeholder="bedrijfsnaam"></ion-input>
-                </ion-item>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['klant-naam']" label="Klant naam" label-placement="stacked" ref="input" type="text" placeholder="naam"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-item>
-                  <ion-input v-model="FormData['voornaam']" label="Voornaam" label-placement="stacked" ref="input" type="text" placeholder="voornaam"></ion-input>
-                </ion-item>
+                  <ion-row>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['klant-straat']" label="klant straat" label-placement="stacked" ref="input" type="text" placeholder="straat"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['klant-huisnummer']" label="Klant huisnummer" label-placement="stacked" ref="input" type="text" placeholder="huisnummer"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-item>
-                  <ion-input v-model="FormData['achternaam']" label="Achternaam" label-placement="stacked" ref="input" type="text" placeholder="achternaam"></ion-input>
-                </ion-item>
+                  <ion-row>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['klant-postcode']" label="Klant postcode" label-placement="stacked" ref="input" type="text" placeholder="postcode"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['klant-plaats']" label="Klant plaats" label-placement="stacked" ref="input" type="text" placeholder="plaats"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-item>
-                  <ion-input v-model="FormData['straat']" label="Straat" label-placement="stacked" ref="input" type="text" placeholder="straat"></ion-input>
-                </ion-item>
+                  <ion-row>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['factuurnummer']" label="Factuurnummer" label-placement="stacked" ref="input" type="text" placeholder="factuurnummer"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-item>
-                  <ion-input v-model="FormData['huisnummer']" label="Huisnummer" label-placement="stacked" ref="input" type="text" placeholder="huisnummer"></ion-input>
-                </ion-item>
+                  <ion-row>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['factuurdatum']" label="Factuurdatum" label-placement="stacked" ref="input" type="text" placeholder="factuurdatum"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                    <ion-col>
+                      <ion-item>
+                        <ion-input v-model="FormData['vervaldatum']" label="Vervaldatum" label-placement="stacked" ref="input" type="text" placeholder="vervaldatum"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
 
-                <ion-item>
-                  <ion-input v-model="FormData['postcode']" label="Postcode" label-placement="stacked" ref="input" type="text" placeholder="postcode"></ion-input>
-                </ion-item>
+                  <ion-row>
+                    <ion-col>
+                      <div style="padding-bottom: 50px;">
+                        <p style="font-size: 13px;padding-left: 15px;">Werkzaamheden</p>
+                        <ion-item class="table_werkzaamheden_wrapper">
+                          <table class="table_werkzaamheden">
+                            <tr class="table_werkzaamheden_headers">
+                              <th class="vw15">Hoeveelheid</th>
+                              <th class="vw35">Omschrijving</th>
+                              <th class="vw10">Btw</th>
+                              <th class="vw15">Prijs</th>
+                            </tr>
+                            <tr
+                              v-for="(product, index) in FormData['producten']"
+                              :key="index"
+                              class="table_werkzaamheden_columns" :id="'werkzaamheid_' + index"
+                            >
+                              <td class="vw15">
+                                <input
+                                  class="vw15"
+                                  type="number"
+                                  v-model="product.hoeveelheid"
+                                />
+                              </td>
+                              <td class="vw35">
+                                <input
+                                  class="vw35"
+                                  type="text"
+                                  v-model="product.omschrijving"
+                                />
+                              </td>
+                              <td class="vw10">
+                                <input
+                                  class="vw10"
+                                  type="text"
+                                  v-model="product.btw"
+                                />
+                              </td>
+                              <td class="vw15">
+                                <input
+                                  class="vw15"
+                                  type="number"
+                                  v-model="product.prijs"
+                                />
+                              </td>
+                              <td class="vw10" style="text-align: center;">
+                                <span @click="remove(index)" style="cursor:pointer;color: #E4833F;">X</span>
+                              </td>
+                            </tr>
+                          </table>
+                          
+                        </ion-item>
+                        <ion-fab class="werkzaamheden_btn_wrapper">
+                          <ion-fab-button
+                            class="werkzaamheden_btn"
+                            style="--background: #E4833F;"
+                            @click="addRow"
+                          >
+                            <ion-icon :icon="add" style="color: #FFF;"></ion-icon>
+                          </ion-fab-button>
+                        </ion-fab>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
 
-                <ion-item>
-                  <ion-input v-model="FormData['plaats']" label="Plaats" label-placement="stacked" ref="input" type="text" placeholder="plaats"></ion-input>
-                </ion-item>
 
-                <ion-item>
-                  <ion-input v-model="FormData['klant-naam']" label="Klant naam" label-placement="stacked" ref="input" type="text" placeholder="naam"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['klant-straat']" label="klant straat" label-placement="stacked" ref="input" type="text" placeholder="straat"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['klant-huisnummer']" label="Klant huisnummer" label-placement="stacked" ref="input" type="text" placeholder="huisnummer"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['klant-postcode']" label="Klant postcode" label-placement="stacked" ref="input" type="text" placeholder="postcode"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['klant-plaats']" label="Klant plaats" label-placement="stacked" ref="input" type="text" placeholder="plaats"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['klant-kvk']" label="Klant KVK" label-placement="stacked" ref="input" type="text" placeholder="kvk nummer"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['factuurnummer']" label="Factuurnummer" label-placement="stacked" ref="input" type="text" placeholder="factuurnummer"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['factuurdatum']" label="Factuurdatum" label-placement="stacked" ref="input" type="text" placeholder="factuurdatum"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['vervaldatum']" label="Vervaldatum" label-placement="stacked" ref="input" type="text" placeholder="vervaldatum"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-input v-model="FormData['btw-nummer']" label="BTW nummer" label-placement="stacked" ref="input" type="text" placeholder="btw nummer"></ion-input>
-                </ion-item>
-
-                <div style="padding-bottom: 50px;">
-                  <p style="font-size: 13px;padding-left: 15px;">Werkzaamheden</p>
-                  <ion-item class="table_werkzaamheden_wrapper">
-                    <table class="table_werkzaamheden">
-                      <tr class="table_werkzaamheden_headers">
-                        <th class="vw15">Hoeveelheid</th>
-                        <th class="vw40">Omschrijving</th>
-                        <th class="vw10">Btw</th>
-                        <th class="vw20">Prijs</th>
-                      </tr>
-                      <tr
-                        v-for="(product, index) in FormData['producten']"
-                        :key="index"
-                        class="table_werkzaamheden_columns"
-                      >
-                        <td class="vw15">
-                          <input
-                            class="vw15"
-                            type="number"
-                            v-model="product.hoeveelheid"
-                          />
-                        </td>
-                        <td class="vw40">
-                          <input
-                            class="vw40"
-                            type="text"
-                            v-model="product.omschrijving"
-                          />
-                        </td>
-                        <td class="vw10">
-                          <input
-                            class="vw10"
-                            type="text"
-                            v-model="product.btw"
-                          />
-                        </td>
-                        <td class="vw20">
-                          <input
-                            class="vw20"
-                            type="number"
-                            v-model="product.prijs"
-                          />
-                        </td>
-                      </tr>
-                    </table>
-
-                  </ion-item>
-                  <ion-fab class="werkzaamheden_btn_wrapper">
-                    <ion-fab-button
-                      class="werkzaamheden_btn"
-                      style="--background: #E4833F;"
-                      @click="addRow"
-                    >
-                      <ion-icon :icon="add" style="color: #FFF;"></ion-icon>
-                    </ion-fab-button>
-                  </ion-fab>
-                </div>
                 <button class="factuur_submit" @click="postGenerateInvoice()">Aanmaken</button>
               </ion-list>
             </ion-content>
@@ -184,7 +182,7 @@
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ selectedInvoice?.number }}</p>
-                      <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ selectedInvoice?.uploaded_at }}</p>
                     </div>
                   </div>
                 </div>
@@ -209,35 +207,16 @@
                         <ion-icon :icon="closeSharp" @click="InvoiceRemarksToggler()" style="color: #CD7130;font-size:52px;margin-left: 25px;cursor: pointer;"></ion-icon>
                       </div>
                       <div class="remark_wrapper">
+                        
+                        <div v-for="remark in selectedInvoice?.remarks" class="remark">
+                          <p class="remark_username">{{ remark?.created_by }}<span class="remark_datetime">{{ remark?.created_at }}</span></p>
+                          <p class="remark_content">{{ remark?.description }}</p>
 
-                        <div class="remark">
-                          <p class="remark_username">Derman Aygun<span class="remark_datetime">18:57 - 30/10/24</span></p>
-                          <p class="remark_content">Dit is een voorbeeld opmerking die door mij is gemaakt. Graag het volgende wijzigen aan uw factuur, naam, achternaam en adres.</p>
-                        </div>
-                        <div class="remark">
-                          <p class="remark_username">Derman Aygun<span class="remark_datetime">18:57 - 30/10/24</span></p>
-                          <p class="remark_content">Dit is een voorbeeld opmerking die door mij is gemaakt. Graag het volgende wijzigen aan uw factuur, naam, achternaam en adres.</p>
-                        </div>
-                        <div class="remark">
-                          <p class="remark_username">Derman Aygun<span class="remark_datetime">18:57 - 30/10/24</span></p>
-                          <p class="remark_content">Dit is een voorbeeld opmerking die door mij is gemaakt. Graag het volgende wijzigen aan uw factuur, naam, achternaam en adres.</p>
-                        </div>
-                        <div class="remark">
-                          <p class="remark_username">Derman Aygun<span class="remark_datetime">18:57 - 30/10/24</span></p>
-                          <p class="remark_content">Dit is een voorbeeld opmerking die door mij is gemaakt. Graag het volgende wijzigen aan uw factuur, naam, achternaam en adres.</p>
-                        </div>
-                        <div class="remark">
-                          <p class="remark_username">Derman Aygun<span class="remark_datetime">18:57 - 30/10/24</span></p>
-                          <p class="remark_content">Dit is een voorbeeld opmerking die door mij is gemaakt. Graag het volgende wijzigen aan uw factuur, naam, achternaam en adres.</p>
-                        </div>
-                        <div class="remark">
-                          <p class="remark_username">Derman Aygun<span class="remark_datetime">18:57 - 30/10/24</span></p>
-                          <p class="remark_content">Dit is een voorbeeld opmerking die door mij is gemaakt. Graag het volgende wijzigen aan uw factuur, naam, achternaam en adres.</p>
                         </div>
 
                       </div>
                       <div class="remark_input_wrapper">
-                        <input class="remark_input" type="textarea" />
+                        <input class="remark_input" id="remark" v-model="RemarkData.description" v-on:keyup.enter="postRemark()" name="remark" type="textarea" />
                       </div>
 
                     </div>
@@ -262,7 +241,6 @@
 
           <div class="section_block">
             <h2 class="section_title">Factuur zoeken</h2>
-            <pre>{{ FormData }}</pre>
             <div class="searchbar_wrapper" style="display: flex;">
               <input v-model="searchInvoice" class="searchbar_input" type="text" name="search_invoice" />
             </div>
@@ -281,7 +259,7 @@
                         <div class="invoice_status_wrapper">
                           <div>
                             <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                            <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
+                            <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
                           </div>
                           <div>
                             <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
@@ -295,11 +273,10 @@
               
               <template v-else v-for="invoice in loggedinuser?.invoices">
                 <div v-if="invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
-                  <!-- <pre>{{ invoice }}</pre> -->
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                      <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
                     </div>
                     <div>
                       <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
@@ -323,7 +300,7 @@
                       <div class="invoice_status_wrapper">
                         <div>
                           <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                          <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
+                          <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
                         </div>
                         <div>
                           <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
@@ -340,7 +317,7 @@
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
-                      <p class="invoice_wrapper_subtitle">Derman Aygun, 29-11-2024, vrijdag 11:36</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
                     </div>
                     <div>
                       <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
@@ -359,6 +336,7 @@
 .vw10 {width: 10lvw}
 .vw15 {width: 15vw}
 .vw20 {width: 20vw}
+.vw {width: 35vw}
 .vw40 {width: 40vw}
 
 .cus_section_block_options {
@@ -532,7 +510,7 @@
   align-items: center;
   margin-top: 15px;
   overflow-y: scroll;
-  max-height: 675px;
+  max-height: 475px;
 }
 .remark {
   width: 90%;
@@ -557,7 +535,7 @@
 }
 .remark_input_wrapper {
   position: absolute;
-  bottom: 15px;
+  bottom: 35px;
   min-height: 50px;
   background-color: #292828;
   width: 100%;
@@ -645,14 +623,26 @@
 
   const cancel = () => modal.value.$el.dismiss(null, 'cancel');
 
+  const date = new Date();
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear();
+  let hour = date.getHours();
+  let minutes = date.getMinutes();
+
+  const RemarkData = ref({
+    "description": "",
+    "created_at": `${day}-${month}-${year} ${hour}:${minutes}`,
+    "created_by": userProfile.value?.firstname + " " + userProfile.value?.lastname,
+    "status": "pending",
+    "invoice_id": selectedInvoice.value?.id
+  })
+
   const FormData = ref({
-    "bedrijfsnaam": "",
-    "voornaam": "",
-    "achternaam": "",
-    "straat": "",
-    "huisnummer": "",
-    "postcode": "",
-    "plaats": "",
+    "bedrijfsnaam": "Codelogix",
+    "voornaam": userProfile.value?.firstname,
+    "achternaam": userProfile.value?.lastname,
+    "straat": userProfile.value?.address,
     "klant-naam": "",
     "klant-straat": "",
     "klant-huisnummer": "",
@@ -660,8 +650,8 @@
     "klant-plaats": "",
     "klant-kvk": "",
     "factuurnummer": "",
-    "factuurdatum": "",
-    "vervaldatum": "",
+    "factuurdatum": day + "-" + month + "-" + year,
+    "vervaldatum": day + "-" + (month+1) + "-" + year,
     "btw-nummer": "",
     "user_id": "",
     "producten": [{
@@ -671,6 +661,12 @@
       "prijs": "",
     }],
   })
+
+  function remove(index: number) {
+    if (index >= 0 && index < FormData.value['producten'].length) {
+      FormData.value['producten'].splice(index, 1);
+    }
+  }
 
   function InvoiceToggler(invoice: any) {
     var modal = document.getElementById("modal_invoice");
@@ -751,13 +747,29 @@
     location.reload();
   }
 
+  async function postRemark() {
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/remark/', RemarkData.value,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    location.reload();
+  }
+
   async function fetchLoggedInUser() {
     const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
     return response.data
   }
 
   async function fetchUserProfile(profileId: any) {
-      const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=2')
+      const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=' + profileId)
       return response.data
   }
 
@@ -765,6 +777,10 @@
     if (authenticated && userInfo?.email) {
       loggedinuser.value = await fetchLoggedInUser();
       userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+
+      FormData.value['voornaam'] = userProfile.value?.firstname;
+      FormData.value['achternaam'] = userProfile.value?.lastname;
+      FormData.value['straat'] = userProfile.value?.address;
 
       loggedinuser.value.invoices.forEach((invoice: { file: any; fileUrl: string; }) => {
         if (invoice.file) {
@@ -781,11 +797,30 @@
   });
 
   watch(
+  () => selectedInvoice.value?.id,
+  (newId) => {
+    if (newId) {
+      RemarkData.value['invoice_id'] = newId;
+    }
+  });
+
+  watch(
   () => loggedinuser.value?.id,
   (newId) => {
     if (newId) {
       FormData.value['user_id'] = newId;
     }
   });
+
+  watch(
+  () => userProfile.value,
+  (newProfile) => {
+    if (newProfile) {
+      const firstname = newProfile.firstname;
+      const lastname = newProfile.lastname;
+      RemarkData.value['created_by'] = `${firstname} ${lastname}`.trim();
+    }
+  });
+
 
 </script>
