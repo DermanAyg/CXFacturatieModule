@@ -267,6 +267,25 @@ def update_invoice(db: Session, invoice: schemas.InvoiceCreate, invoice_id = int
 
     return invoice_by_id
 
+def update_invoice_status(db: Session, status: str, invoice_id = int):
+    
+    if not status:
+        raise HTTPException(status_code=400, detail="status field is required and cannot be null")
+    
+    print(status)
+    print(invoice_id)
+    
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+
+    invoice.status = status
+    
+    db.add(invoice)
+    db.commit()
+    db.refresh(invoice)
+
+    return invoice
+
+
 def delete_invoice(db: Session, invoice_id: int):
 
     invoice_check = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()

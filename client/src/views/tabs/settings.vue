@@ -165,7 +165,7 @@
 }
 </style>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewDidLeave, onIonViewWillLeave } from '@ionic/vue';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios'
 import { alertCircleSharp, checkmarkCircleSharp, settingsSharp } from 'ionicons/icons';
@@ -190,6 +190,10 @@ const loggedinuser = ref({
   "firstname": "John",
   "lastname": "Visser",
   "role": "admin",
+})
+
+onIonViewWillLeave(async () => {
+  location.reload();
 })
 
 function updateCompanyToggler() {

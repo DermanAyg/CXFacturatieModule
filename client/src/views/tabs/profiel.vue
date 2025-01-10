@@ -40,24 +40,11 @@
           </div>
         </div>
         <div v-if="isAdmin" class="section_block">
-          <h2 class="section_title">Personeel</h2>
+          <h2 class="section_title">Personeel profiel</h2>
           <div class="profile_wrapper">
-            <ul>
-              <a href="#"><li>Registreren</li></a>
-              <a href="#"><li>Wachtwoord vergeten</li></a>
-              <a href="#"><li>Blokkeren</li></a>
-              <a href="#"><li>Onderhouden</li></a>
-            </ul>
-          </div>
-        </div>
-        <div v-if="isAdmin" class="section_block">
-          <h2 class="section_title">Facturen</h2>
-          <div class="profile_wrapper">
-            <ul>
-              <a href="#"><li>Registreren</li></a>
-              <a href="#"><li>Wachtwoord vergeten</li></a>
-              <a href="#"><li>Blokkeren</li></a>
-              <a href="#"><li>Onderhouden</li></a>
+            <ul style="width: fit-content;">
+              <a style="cursor:pointer;" @click="profileRegistrationToggler()"><li>Registreren</li></a>
+              <a style="cursor:pointer;" @click="profileManagerToggler()"><li>Verwijderen</li></a>
             </ul>
           </div>
         </div>
@@ -86,11 +73,130 @@
           </div>
         </div>
       </div>
+      
+      <div v-if="toggleProfileRegistration" id="personeel_profiel_modal_registreren" class="modal container personeel_profiel_modal_registreren">
+        <div class="personeel_profiel_modal_registreren_header" style="width: 95%;">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="2">
+                <ion-icon @click="profileRegistrationToggler()" :icon="arrowBackSharp" style="font-size: 28px;color: #CD7130;cursor:pointer;"></ion-icon>
+              </ion-col>
+              <ion-col size="8">
+                <h2 style="text-align:center;">Personeel profiel aanmaken</h2>
+              </ion-col>
+              <ion-col size="2">
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+
+        <div class="personeel_profiel_modal_registreren_form">
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <ion-item>
+                    <ion-input v-model="profileData['firstname']" label="Voornaam" label-placement="stacked" ref="input" type="text" placeholder="voornaam"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col>
+                  <ion-item>
+                    <ion-input v-model="profileData['lastname']" label="Achternaam" label-placement="stacked" ref="input" type="text" placeholder="achternaam"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col>
+                  <ion-item>
+                    <ion-input v-model="profileData['phone']" label="Telefoonnummer" label-placement="stacked" ref="input" type="text" placeholder="telefoonnummer"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col>
+                  <ion-item>
+                    <ion-input v-model="profileData['email']" label="Emailadres" label-placement="stacked" ref="input" type="text" placeholder="emailadres"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col>
+                  <ion-item>
+                    <ion-input v-model="profileData['address']" label="Adres" label-placement="stacked" ref="input" type="text" placeholder="adres"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+              
+            </ion-grid>
+        </div>
+
+        <div class="personeel_profiel_modal_registreren_footer">
+          <button class="profiel_aanmaken_btn" @click="postProfile()">Profiel aanmaken</button>
+        </div>
+ 
+      </div>
+
+      <div v-if="toggleProfileManager" id="personeel_profiel_modal_blokkeren" class="modal container personeel_profiel_modal_blokkeren">
+        
+        <div class="personeel_profiel_modal_registreren_header" style="width: 95%;">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="2">
+                <ion-icon @click="profileManagerToggler()" :icon="arrowBackSharp" style="font-size: 28px;color: #CD7130;cursor:pointer;"></ion-icon>
+              </ion-col>
+              <ion-col size="8">
+                <h2 style="text-align:center;">Personeel profiel verwijderen</h2>
+              </ion-col>
+              <ion-col size="2">
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+
+        <div class="personeel_profiel_modal_registreren_form" style="width:90%;">
+          <ul style="list-style-type: none;margin:0;padding: 25px 50px;">
+            <li style="text-align:center;" v-for="profile in profiles">
+              {{ profile?.id }} - {{ profile?.firstname }} - {{ profile?.lastname }} - {{ profile?.phone }} - {{ profile?.email }}
+              <span @click="deleteProfile(profile)" style="cursor:pointer;margin-left: 25px;color:#CD7130;">X</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
 
     </ion-content>
   </ion-page>
 </template>
 <style>
+.personeel_profiel_modal_registreren_header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: #0c0c0c;
+}
+.personeel_profiel_modal_registreren_header ion-col{
+  display:flex;
+  align-items: center;
+}
+.personeel_profiel_modal_registreren_header ion-col h2{
+  margin:0;
+  text-align:center;
+  width: 100%;
+}
+.personeel_profiel_modal_registreren_form {
+  margin-top: 50px;
+  background-color: #0c0c0c;
+}
+.personeel_profiel_modal_registreren_footer {
+  margin-top: 30px;
+}
+.profiel_aanmaken_btn {
+  margin-right: 25px;
+  margin-bottom: 25px;
+  padding: 10px 40px;
+  display: flex;
+  justify-self: self-end;
+  background-color: #E4833F;
+  color: #FFF;
+}
 .container {
   min-height: 500px;
   width: 100%;
@@ -108,7 +214,8 @@
   list-style-type: none;
   padding: 0;
   margin-left:15px;
-  padding-bottom: 10px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
 }
 .profile_wrapper li {
   padding-bottom: 5px;
@@ -158,7 +265,7 @@
   top: 120px;
 }
 .profile_modal .section_block {
-  height: 285px;
+  height: 225px;
 }
 .profile_modal input {
   color: black;
@@ -173,6 +280,7 @@
 .profile_btn_wrapper {
   display: flex;
   justify-content: flex-end;
+  margin-top: -30px;
 }
 .profile_back_btn {
   margin-left: 10px;
@@ -189,17 +297,26 @@
   color: #FFF;
   font-size: 12px;
 }
+.personeel_profiel_modal_registreren, .personeel_profiel_modal_blokkeren {
+  position: absolute;
+  background-color: #121212;
+  top: 0;
+  left: 4vw;
+  width: 91vw;
+  height: 80vh;
+}
 </style>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter } from '@ionic/vue';
-import { ref, onMounted, watch, computed } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter, onIonViewDidLeave, onIonViewWillLeave,IonModal,IonItem,IonInput,IonList } from '@ionic/vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import axios from 'axios'
-import { alertCircleSharp, checkmarkCircleSharp, personCircleSharp, settingsSharp } from 'ionicons/icons';
+import { alertCircleSharp, arrowBackSharp, checkmarkCircleSharp, personCircleSharp, settingsSharp } from 'ionicons/icons';
 import { useAuth0 } from '@auth0/auth0-vue';
 import router from '@/router';
 
-const loggedinuser = ref()
-const userProfile = ref()
+const loggedinuser = ref();
+const userProfile = ref();
+const profiles = ref();
 
 const isAdmin = computed(() => loggedinuser.value?.role === 'admin');
 const isUser = computed(() => loggedinuser.value?.role === 'user');
@@ -207,6 +324,19 @@ const isUser = computed(() => loggedinuser.value?.role === 'user');
 const auth0 = useAuth0();
 const { logout, user, isAuthenticated } = useAuth0();
 const logoutParams = { returnTo: window.location.origin + '/login' };
+
+const profileData = ref({
+  'firstname': '',
+  'lastname': '',
+  'phone': '',
+  'email': '',
+  'date_of_birth': 'anon',
+  'gender': 'anon',
+  'address': ''
+})
+
+const toggleProfileRegistration = ref();
+const toggleProfileManager = ref();
 
 const updatedProfile = ref({
   "firstname": "",
@@ -217,6 +347,23 @@ const updatedProfile = ref({
   "gender": "",
   "address": "",
 });
+
+async function deleteProfile(profile: any) {
+  if(confirm("Weet je zeker dat je profiel: " + profile.email + " wilt verwijderen?")) {
+    try {
+      const response = await axios.delete('http://127.0.0.1:8000/profile/{id}?profile_id='+profile.id+'',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error deleting the profile:', error);
+    }
+    location.reload()
+  }
+}
 
 function user_logout() {
   logout({ logoutParams });
@@ -244,6 +391,38 @@ function updateProfileToggler() {
   }
 }
 
+function profileRegistrationToggler() {
+  if (toggleProfileRegistration.value) {
+    toggleProfileRegistration.value = false;
+  } else {
+    toggleProfileRegistration.value = true;
+  }
+}
+
+function profileManagerToggler() {
+  if (toggleProfileManager.value) {
+    toggleProfileManager.value = false;
+  } else {
+    toggleProfileManager.value = true;
+  }
+}
+
+async function postProfile() {
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/profile/', profileData.value,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    location.reload();
+  }
+
 async function updateProfile() {
   console.log(loggedinuser.value.profile_id);
   console.log(updatedProfile.value)
@@ -266,14 +445,24 @@ async function fetchLoggedInUser() {
   return response.data
 }
 
+async function fetchUserProfiles() {
+  const response = await axios.get<[]>('http://127.0.0.1:8000/profile/')
+  return response.data
+}
+
 async function fetchUserProfile(profileId: any) {
     const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=' + loggedinuser.value.profile_id)
     return response.data
 }
 
+onIonViewWillLeave(async () => {
+  location.reload();
+})
+
 onIonViewWillEnter(async () => {
   loggedinuser.value = null;
   userProfile.value = null;
+  profiles.value = await fetchUserProfiles();
 
   if (isAuthenticated.value && user.value?.email) {
     loggedinuser.value = await fetchLoggedInUser();

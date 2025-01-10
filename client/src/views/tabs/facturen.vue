@@ -171,6 +171,10 @@
                       <li>Delen <span>@</span></li>
                       <li>Wijzigen <span>@</span></li>
                       <li>Verwijderen <span>@</span></li>
+                      <li v-if="isAdmin" @click="edit_invoice_status(selectedInvoice)">
+                        <span v-if="selectedInvoice?.status === 'open'">Factuur sluiten</span>
+                        <span v-else-if="selectedInvoice?.status === 'closed'">Factuur openen</span>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -248,8 +252,44 @@
 
           <div class="section_block">
             <h2 class="section_title">Open facturen</h2>
-            <div class="invoices_wrapper">
+            <div v-if="isAdmin" class="invoices_wrapper">
+              <template v-if="searchInvoice">
+                <div>
+                    <div v-for="invoice in initialInvoices">
+                      
+                      <div v-if="invoice['number'].includes(searchInvoice) && invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
 
+                        <div class="invoice_status_wrapper">
+                          <div>
+                            <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                            <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
+                          </div>
+                          <div>
+                            <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+              </template>
+              
+              <template v-else v-for="invoice in initialInvoices">
+                <div v-if="invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                  <div class="invoice_status_wrapper">
+                    <div>
+                      <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
+                    </div>
+                    <div>
+                      <ion-icon class="invoice-icon-orange" :icon="alertCircleSharp"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+            </div>
+            <div v-if="isUser" class="invoices_wrapper">
               <template v-if="searchInvoice">
                 <div>
                     <div v-for="invoice in loggedinuser?.invoices">
@@ -270,7 +310,7 @@
                     </div>
                   </div>
               </template>
-              
+
               <template v-else v-for="invoice in loggedinuser?.invoices">
                 <div v-if="invoice.status == 'open'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <div class="invoice_status_wrapper">
@@ -284,14 +324,51 @@
                   </div>
                 </div>
               </template>
-
             </div>
           </div>
           
           <div class="section_block">
             <h2 class="section_title">Gesloten facturen</h2>
-            <div class="invoices_wrapper">
+            
+            <div v-if="isAdmin" class="invoices_wrapper">
 
+              <template v-if="searchInvoice">
+                <div>
+                    <div v-for="invoice in initialInvoices">
+                      <div v-if="invoice['number'].includes(searchInvoice) && invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+
+                      <div class="invoice_status_wrapper">
+                        <div>
+                          <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                          <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
+                        </div>
+                        <div>
+                          <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
+                        </div>
+                      </div>
+
+                      </div>
+                    </div>
+                  </div>
+              </template>
+              
+              <template v-else v-for="invoice in initialInvoices">
+                <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                  <div class="invoice_status_wrapper">
+                    <div>
+                      <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.lastname }}, {{ invoice.uploaded_at }}</p>
+                    </div>
+                    <div>
+                      <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+            
+            </div>
+            <div v-if="isUser" class="invoices_wrapper">
               <template v-if="searchInvoice">
                 <div>
                     <div v-for="invoice in loggedinuser?.invoices">
@@ -311,7 +388,7 @@
                     </div>
                   </div>
               </template>
-              
+
               <template v-else v-for="invoice in loggedinuser?.invoices">
                 <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <div class="invoice_status_wrapper">
@@ -325,7 +402,6 @@
                   </div>
                 </div>
               </template>
-
             </div>
           </div>
         </div>
@@ -599,12 +675,18 @@
     IonModal,
     IonItem,
     IonInput,
-    IonList } from '@ionic/vue';
+    IonList,
+    onIonViewWillEnter,
+    useIonRouter, 
+    onIonViewWillLeave,
+    onIonViewDidLeave,
+    onIonViewDidEnter} from '@ionic/vue';
   import { OverlayEventDetail } from '@ionic/core/components';
   import { add, alertCircleSharp, arrowBackOutline, arrowBackSharp, arrowForwardOutline, chatbubbleEllipsesOutline, chatbubbleEllipsesSharp, checkmarkCircleSharp, closeSharp, ellipsisHorizontalOutline } from 'ionicons/icons';
-  import { ref, onMounted, watch, computed  } from 'vue';
+  import { ref, onMounted, watch, computed, onUnmounted  } from 'vue';
   import axios from 'axios'
   import { useAuth0 } from '@auth0/auth0-vue';
+  import { useRouter } from 'vue-router';
 
   const modal = ref();
   const input = ref();
@@ -668,6 +750,11 @@
     }
   }
 
+  async function fetchInitialInvoices() {
+    const response = await axios.get<[]>('http://127.0.0.1:8000/invoice/')
+    initialInvoices.value = response.data
+  }
+
   function InvoiceToggler(invoice: any) {
     var modal = document.getElementById("modal_invoice");
     selectedInvoice.value = invoice;
@@ -682,6 +769,11 @@
     } else if (modal?.style.display === "flex") {
       modal.style.display = "none";
     }
+
+    console.log("test2 - 3");
+    console.log(selectedInvoice.value);
+    console.log(modal?.style.display);
+
   }
 
   function convertBase64ToPdfUrl(base64String: any) {
@@ -763,6 +855,27 @@
     location.reload();
   }
 
+  async function edit_invoice_status(invoice: any) {
+
+    let status = invoice.status === "closed" ? "open" : "closed";
+
+    try {
+      const response = await axios.put('http://127.0.0.1:8000/invoice-status/?invoice_id='+invoice.id+'&status='+status+'',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response)
+    } catch (error) {
+      console.error('Error updating the invoice:', error);
+    }
+    console.log(status)
+    
+    location.reload();
+  }
+
   async function fetchLoggedInUser() {
     const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
     return response.data
@@ -772,6 +885,21 @@
       const response = await axios.get<[]>('http://127.0.0.1:8000/profile/{id}?profile_id=' + profileId)
       return response.data
   }
+
+  onIonViewWillLeave(async () => {
+    location.reload();
+  })
+
+  onIonViewWillEnter(async () => {
+    fetchInitialInvoices();
+    loggedinuser.value = null;
+    userProfile.value = null;
+
+    if (isAuthenticated.value && user.value?.email) {
+      loggedinuser.value = await fetchLoggedInUser();
+      userProfile.value = await fetchUserProfile(loggedinuser.value.profile_id);
+    }
+  });
 
   watch([isAuthenticated, user], async ([authenticated, userInfo]) => {
     if (authenticated && userInfo?.email) {
@@ -821,6 +949,5 @@
       RemarkData.value['created_by'] = `${firstname} ${lastname}`.trim();
     }
   });
-
 
 </script>

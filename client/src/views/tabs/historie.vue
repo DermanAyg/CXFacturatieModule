@@ -91,7 +91,23 @@
           <div class="section_block">
             <h2 class="section_title">Historie</h2>
             <div class="invoices_wrapper">
-              <div>
+
+              <div v-if="isUser">
+                <div v-for="invoice in loggedinuser.invoices">
+                  <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                  <div class="invoice_status_wrapper">
+                    <div>
+                      <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
+                      <p class="invoice_wrapper_subtitle">{{ userProfile?.firstname }} {{ userProfile?.firstname }}, {{ invoice.last_activity }}</p>
+                    </div>
+                    <div>
+                      <ion-icon class="invoice-icon-green" :icon="checkmarkCircleSharp"></ion-icon>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+              <div v-if="isAdmin">
                 <div v-for="invoice in initialInvoices">
                   <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <div class="invoice_status_wrapper">
@@ -106,6 +122,7 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -623,7 +640,7 @@
 }
 </style>
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewWillEnter, onIonViewDidLeave, onIonViewWillLeave } from '@ionic/vue';
 import { ref, onMounted, watch, computed  } from 'vue';
 import axios from 'axios'
 import { checkmarkCircleSharp, arrowBackOutline, chatbubbleEllipsesSharp, closeSharp, ellipsisHorizontalOutline, alertCircleSharp } from 'ionicons/icons';
@@ -790,6 +807,10 @@ watch(
     RemarkData.value['created_by'] = `${firstname} ${lastname}`.trim();
   }
 });
+
+onIonViewWillLeave(async () => {
+  location.reload();
+})
 
 onIonViewWillEnter(async () => {
   loggedinuser.value = null;
