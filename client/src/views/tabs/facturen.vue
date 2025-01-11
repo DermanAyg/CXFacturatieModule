@@ -168,9 +168,8 @@
                 <div class="modal_invoice_options_wrapper">
                   <div class="options_wrapper">
                     <ul class="options_wrapper_ul">
-                      <li>Delen <span>@</span></li>
-                      <li>Wijzigen <span>@</span></li>
-                      <li>Verwijderen <span>@</span></li>
+                      <li>Delen</li>
+                      <li>Wijzigen</li>
                       <li v-if="isAdmin" @click="edit_invoice_status(selectedInvoice)">
                         <span v-if="selectedInvoice?.status === 'open'">Factuur sluiten</span>
                         <span v-else-if="selectedInvoice?.status === 'closed'">Factuur openen</span>
@@ -769,11 +768,6 @@
     } else if (modal?.style.display === "flex") {
       modal.style.display = "none";
     }
-
-    console.log("test2 - 3");
-    console.log(selectedInvoice.value);
-    console.log(modal?.style.display);
-
   }
 
   function convertBase64ToPdfUrl(base64String: any) {
@@ -867,11 +861,9 @@
           },
         }
       );
-      console.log(response)
     } catch (error) {
       console.error('Error updating the invoice:', error);
     }
-    console.log(status)
     
     location.reload();
   }
