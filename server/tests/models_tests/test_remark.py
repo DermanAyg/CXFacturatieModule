@@ -22,6 +22,7 @@ def test_update_remark(pg, setup_single_test_remark):
     update_data = schemas.RemarkCreate(
         description="updated test",
         created_at=None,
+        created_by=None,
         status=None,
         invoice_id=None
     )

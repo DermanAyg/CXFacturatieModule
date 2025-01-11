@@ -306,7 +306,6 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
         for invoice in user.invoices:
             if invoice:
                 invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
-    jsonable_encoder(user.invoices)
 
     return users
 

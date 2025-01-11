@@ -21,11 +21,16 @@ def test_create_company(pg, setup_single_test_company):
 def test_update_company(pg, setup_single_test_company):
     update_data = schemas.CompanyCreate(
         name="updated test",
+        postcode=None,
+        plaats=None,
+        straat=None,
+        huisnr=None,
         email=None,
         mobile=None,
         emergency_phone=None,
         kvk_nr=None,
-        btw_nr=None
+        btw_nr=None,
+        users=[]
     )
     assert functions.get_company(pg, 1).name == "test"
     updated_company = functions.update_company(pg, update_data, 1)

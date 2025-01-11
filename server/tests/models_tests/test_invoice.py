@@ -12,11 +12,11 @@ def test_not_empty_get_invoices(pg, setup_multiple_test_invoices):
     assert len(functions.get_invoices(pg)) == 2
 
 def test_get_invoice_by_id(pg, setup_single_test_invoice):
-    assert functions.get_invoice(pg, 1).number == "12345"
+    assert functions.get_invoice(pg, 1)['number'] == "12345"
 
 def test_create_invoice(pg, setup_single_test_invoice):
     assert len(functions.get_invoices(pg)) == 1
-    assert functions.get_invoice(pg, 1).number == "12345"
+    assert functions.get_invoice(pg, 1)['number'] == "12345"
 
 def test_update_invoice(pg, setup_single_test_invoice):
     update_data = schemas.InvoiceCreate(
@@ -27,7 +27,7 @@ def test_update_invoice(pg, setup_single_test_invoice):
         status=None,
         user_id=None
     )
-    assert functions.get_invoice(pg, 1).number == "12345"
+    assert functions.get_invoice(pg, 1)['number'] == "12345"
     updated_invoice = functions.update_invoice(pg, update_data, 1)
     assert updated_invoice.number == "111"
 
