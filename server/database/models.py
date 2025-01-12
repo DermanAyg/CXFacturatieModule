@@ -70,7 +70,7 @@ class Invoice(Base):
     number = Column(String, index=True, nullable=True)
     uploaded_at = Column(String, index=True, nullable=True)
     last_activity = Column(String, index=True, nullable=True)
-    file = Column(LargeBinary, index=True, nullable=True)
+    file = Column(String, index=True, nullable=True)
     status = Column(String, index=True, nullable=True)
     user_id = Column(Integer, ForeignKey("User.id"))
 

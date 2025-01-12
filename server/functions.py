@@ -227,11 +227,22 @@ def get_invoices_by_user_id(db: Session, user_id: int, skip: int = 0, limit: int
 
 def get_invoice(db: Session, invoice_id: int):
     invoice = db.query(models.Invoice).options(joinedload(models.Invoice.remarks)).filter(models.Invoice.id == invoice_id).first()
-        
-    if invoice.file:
-        invoice.file = schemas.InvoiceBase.encode_file(invoice.file)
     
-    return jsonable_encoder(invoice)
+    if invoice is None:
+        return None
+
+    # Prepare and return the InvoiceBase schema without modifying the database
+    invoice_schema = schemas.InvoiceBase(
+        number=invoice.number,
+        uploaded_at=invoice.uploaded_at,
+        last_activity=invoice.last_activity,
+        status=invoice.status,
+        user_id=invoice.user_id,
+        remarks=invoice.remarks,
+        file=schemas.InvoiceBase.encode_file(invoice.file) if invoice.file else None
+    )
+
+    return jsonable_encoder(invoice_schema)
 
 def create_invoice(db: Session, invoice: schemas.InvoiceCreate):
 
