@@ -20,7 +20,7 @@ from database import models, schemas
 
 def generate_invoice(invoice_data):
 
-    print("$$$$$$$$$$$$$$$$$$$")
+    print("@@@@@@@@@@@@@@@@@@@@")
     print(invoice_data)
 
     buffer = io.BytesIO()
@@ -285,6 +285,19 @@ def update_invoice_status(db: Session, status: str, invoice_id = int):
 
     return invoice
 
+def update_invoice_file(db: Session, invoice_data, invoice_id = int):
+    if not invoice_data:
+        raise HTTPException(status_code=400, detail="invoic data is required and cannot be null")
+    
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+
+    invoice.file = generate_invoice(invoice_data)
+    
+    db.add(invoice)
+    db.commit()
+    db.refresh(invoice)
+
+    return invoice
 
 def delete_invoice(db: Session, invoice_id: int):
 

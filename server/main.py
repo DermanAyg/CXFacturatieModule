@@ -113,6 +113,11 @@ def edit_invoice_status(invoice_id: int, status: str, db: Session = Depends(get_
     invoice = functions.update_invoice_status(db, status, invoice_id)
     return f"Succesfully updated the invoice status with id: {invoice_id}"
 
+@app.put("/invoice-file/", tags=["invoice"])
+def edit_invoice_file(invoice_id: int, invoice_data: dict, db: Session = Depends(get_db)):
+    invoice = functions.update_invoice_file(db, invoice_data, invoice_id)
+    return f"Succesfully updated the invoice file with id: {invoice_id}"
+
 @app.delete("/invoice/{id}", tags=["invoice"])
 def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
     functions.delete_invoice(db, invoice_id)

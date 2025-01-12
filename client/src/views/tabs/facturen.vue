@@ -168,8 +168,8 @@
                 <div class="modal_invoice_options_wrapper">
                   <div class="options_wrapper">
                     <ul class="options_wrapper_ul">
-                      <li>Delen</li>
-                      <li>Wijzigen</li>
+                      <!-- <li>Delen</li> -->
+                      <li @click="editInvoiceToggler()">Wijzigen</li>
                       <li v-if="isAdmin" @click="edit_invoice_status(selectedInvoice)">
                         <span v-if="selectedInvoice?.status === 'open'">Factuur sluiten</span>
                         <span v-else-if="selectedInvoice?.status === 'closed'">Factuur openen</span>
@@ -225,7 +225,133 @@
                     </div>
                   </div>
                   <!-- MODAL REMARKS VIEWER END -->
+                  <!-- MODAL EDIT INVOICE BEGIN -->
+                  <div id="modal_edit_invoice" name="modal_edit_invoice" class="md modal-default modal_edit_invoice" style="display: none;">
 
+                    <div style="margin-top: 15px;">
+                        <ion-icon :icon="closeSharp" @click="editInvoiceToggler()" style="color: #CD7130;font-size:52px;margin-left: 25px;cursor: pointer;"></ion-icon>
+                    </div>
+                    <ion-content class="ion-padding">
+                      <ion-list>
+                        <ion-grid>
+                          <ion-row>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['klant-naam']" label="Klant naam" label-placement="stacked" ref="input" type="text" placeholder="naam"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                          </ion-row>
+
+                          <ion-row>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['klant-straat']" label="klant straat" label-placement="stacked" ref="input" type="text" placeholder="straat"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['klant-huisnummer']" label="Klant huisnummer" label-placement="stacked" ref="input" type="text" placeholder="huisnummer"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                          </ion-row>
+
+                          <ion-row>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['klant-postcode']" label="Klant postcode" label-placement="stacked" ref="input" type="text" placeholder="postcode"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['klant-plaats']" label="Klant plaats" label-placement="stacked" ref="input" type="text" placeholder="plaats"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                          </ion-row>
+
+                          <ion-row>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['factuurdatum']" label="Factuurdatum" label-placement="stacked" ref="input" type="text" placeholder="factuurdatum"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                            <ion-col>
+                              <ion-item>
+                                <ion-input v-model="editedInvoiceFileData['vervaldatum']" label="Vervaldatum" label-placement="stacked" ref="input" type="text" placeholder="vervaldatum"></ion-input>
+                              </ion-item>
+                            </ion-col>
+                          </ion-row>
+
+                          <ion-row>
+                            <ion-col>
+                              <div style="padding-bottom: 50px;">
+                                <p style="font-size: 13px;padding-left: 15px;">Werkzaamheden</p>
+                                <ion-item class="table_werkzaamheden_wrapper">
+                                  <table class="table_werkzaamheden">
+                                    <tr class="table_werkzaamheden_headers">
+                                      <th class="vw15">Hoeveelheid</th>
+                                      <th class="vw35">Omschrijving</th>
+                                      <th class="vw10">Btw</th>
+                                      <th class="vw15">Prijs</th>
+                                    </tr>
+                                    <tr
+                                      v-for="(product, index) in editedInvoiceFileData['producten']"
+                                      :key="index"
+                                      class="table_werkzaamheden_columns" :id="'werkzaamheid_' + index"
+                                    >
+                                      <td class="vw15">
+                                        <input
+                                          class="vw15"
+                                          type="number"
+                                          v-model="product.hoeveelheid"
+                                        />
+                                      </td>
+                                      <td class="vw35">
+                                        <input
+                                          class="vw35"
+                                          type="text"
+                                          v-model="product.omschrijving"
+                                        />
+                                      </td>
+                                      <td class="vw10">
+                                        <input
+                                          class="vw10"
+                                          type="text"
+                                          v-model="product.btw"
+                                        />
+                                      </td>
+                                      <td class="vw15">
+                                        <input
+                                          class="vw15"
+                                          type="number"
+                                          v-model="product.prijs"
+                                        />
+                                      </td>
+                                      <td class="vw10" style="text-align: center;">
+                                        <span @click="remove(index)" style="cursor:pointer;color: #E4833F;">X</span>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                  
+                                </ion-item>
+                                <ion-fab class="werkzaamheden_btn_wrapper">
+                                  <ion-fab-button
+                                    class="werkzaamheden_btn"
+                                    style="--background: #E4833F;"
+                                    @click="addRow"
+                                  >
+                                    <ion-icon :icon="add" style="color: #FFF;"></ion-icon>
+                                  </ion-fab-button>
+                                </ion-fab>
+                              </div>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+
+                        <button class="factuur_submit" @click="edit_invoice_file()">Factuur wijzigen</button>
+                      </ion-list>
+                    </ion-content>
+                  </div>
+                  <!-- MODAL EDIT INVOICE END -->
               </div>
             </div>
           </div>
@@ -413,6 +539,16 @@
 .vw20 {width: 20vw}
 .vw {width: 35vw}
 .vw40 {width: 40vw}
+
+.modal_edit_invoice {
+  position: absolute;
+  left: 10vw;
+  right: 10vw;
+  width: 80vw;
+  height: 80vh;
+  top: 10vh;
+  z-index: 9999999999;
+}
 
 .cus_section_block_options {
   min-width: 90%;
@@ -719,6 +855,30 @@
     "invoice_id": selectedInvoice.value?.id
   })
 
+  const editedInvoiceFileData = ref({
+      "bedrijfsnaam": "Codelogix",
+      "voornaam": userProfile.value?.firstname,
+      "achternaam": userProfile.value?.lastname,
+      "straat": userProfile.value?.address,
+      "klant-naam": "",
+      "klant-straat": "",
+      "klant-huisnummer": "",
+      "klant-postcode": "",
+      "klant-plaats": "",
+      "klant-kvk": "",
+      "factuurnummer": selectedInvoice.value?.number,
+      "factuurdatum": day + "-" + month + "-" + year,
+      "vervaldatum": day + "-" + (month+1) + "-" + year,
+      "btw-nummer": "",
+      "user_id": "",
+      "producten": [{
+        "hoeveelheid": "",
+        "omschrijving": "",
+        "btw": "",
+        "prijs": "",
+      }],
+    })
+
   const FormData = ref({
     "bedrijfsnaam": "Codelogix",
     "voornaam": userProfile.value?.firstname,
@@ -808,6 +968,16 @@
     }
   }
 
+  function editInvoiceToggler() {
+    var edit_invoice_modal = document.getElementById("modal_edit_invoice");
+
+    if (edit_invoice_modal?.style.display === "none") {
+      edit_invoice_modal.style.display = "flex";
+    } else if (edit_invoice_modal?.style.display === "flex") {
+      edit_invoice_modal.style.display = "none";
+    }
+  }
+
   function addRow() {
     FormData.value["producten"].push({
       hoeveelheid: "",
@@ -868,6 +1038,23 @@
     location.reload();
   }
 
+  async function edit_invoice_file() {
+
+    try {
+      const response = await axios.put('http://127.0.0.1:8000/invoice-file/?invoice_id=' + selectedInvoice.value?.id, editedInvoiceFileData.value,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error updating the invoice:', error);
+    }
+
+    location.reload();
+  }
+
   async function fetchLoggedInUser() {
     const response = await axios.get<[]>('http://127.0.0.1:8000/userbyemail/' + user.value?.email)
     return response.data
@@ -901,6 +1088,10 @@
       FormData.value['voornaam'] = userProfile.value?.firstname;
       FormData.value['achternaam'] = userProfile.value?.lastname;
       FormData.value['straat'] = userProfile.value?.address;
+
+      editedInvoiceFileData.value['voornaam'] = userProfile.value?.firstname;
+      editedInvoiceFileData.value['achternaam'] = userProfile.value?.lastname;
+      editedInvoiceFileData.value['straat'] = userProfile.value?.address;
 
       loggedinuser.value.invoices.forEach((invoice: { file: any; fileUrl: string; }) => {
         if (invoice.file) {
@@ -941,5 +1132,15 @@
       RemarkData.value['created_by'] = `${firstname} ${lastname}`.trim();
     }
   });
+
+  watch(
+  () => selectedInvoice.value,
+  (newInvoice) => {
+    editedInvoiceFileData.value = {
+      ...editedInvoiceFileData.value,
+      "factuurnummer": newInvoice?.number || ""
+    };
+  }
+);
 
 </script>
