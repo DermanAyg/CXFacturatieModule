@@ -13,7 +13,7 @@
         </div>
         <div class="section_block">
           <h2 class="section_title">Bedrijfsgegevens</h2>
-          <div v-if="loggedinuser.role === 'admin'" class="settings_wrapper">
+          <div class="settings_wrapper">
             <ul>
               <li>{{ initialCompany?.name }}</li>
               <li>{{ initialCompany?.postcode }}, {{ initialCompany?.plaats }}</li>
@@ -28,9 +28,9 @@
 
             <ul>
               <li>Mail<span>{{ initialCompany?.email }}</span></li>
-              <li>Telefoon<span>{{ initialCompany?.mobile }}</span></li>
+              <li>Telefoon<span id="phone_number">{{ initialCompany?.mobile }}</span></li>
             </ul>
-            <div class="edit_settings_btn_wrapper">
+            <div v-if="loggedinuser.role === 'admin'" class="edit_settings_btn_wrapper">
               <div @click="updateCompanyToggler()" class="edit_settings_background">
                 <ion-icon :icon="settingsSharp" style="color: #FFF;"></ion-icon>
               </div>
@@ -189,7 +189,7 @@ const loggedinuser = ref({
   "email": "johnvisser_123@hotmail.com",
   "firstname": "John",
   "lastname": "Visser",
-  "role": "admin",
+  "role": "user",
 })
 
 onIonViewWillLeave(async () => {

@@ -37,7 +37,7 @@
             <!-- INVOICE OPTIONS MODAL END -->
 
             <div style="width: 90%;margin-top: 25px;">
-              <div class="invoice_wrapper">
+              <div id="invoice_wrapper" class="invoice_wrapper">
                 <div class="invoice_status_wrapper">
                   <div>
                     <p class="invoice_wrapper_title">Factuur-{{ selectedInvoice?.number }}</p>
@@ -94,7 +94,7 @@
 
               <div v-if="isUser">
                 <div v-for="invoice in loggedinuser.invoices">
-                  <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                  <div v-if="invoice.status == 'closed'" id="invoice_wrapper" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>
@@ -109,7 +109,7 @@
               </div>
               <div v-if="isAdmin">
                 <div v-for="invoice in initialInvoices">
-                  <div v-if="invoice.status == 'closed'" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
+                  <div v-if="invoice.status == 'closed'" id="invoice_wrapper" class="invoice_wrapper" @click="InvoiceToggler(invoice)">
                   <div class="invoice_status_wrapper">
                     <div>
                       <p class="invoice_wrapper_title">Factuur-{{ invoice.number }}</p>

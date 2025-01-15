@@ -20,7 +20,7 @@ class Company(Base):
     kvk_nr = Column(String, unique=True, index=True, nullable=True)
     btw_nr = Column(String, unique=True, index=True, nullable=True)
 
-    users = relationship("User", back_populates="company")
+    users = relationship("User", back_populates="company", lazy='noload')
 
     def __repr__(self):
         return f"<Company(id={self.id}, name='{self.name}', email='{self.email}', mobile={self.mobile}, emergency_phone={self.emergency_phone}, kvk_nr='{self.kvk_nr}', btw_nr='{self.btw_nr}')>"

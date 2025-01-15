@@ -90,6 +90,7 @@ class Company(CompanyBase):
 
     class Config:
         from_attributes = True
+        
 
 class ProfileBase(BaseModel):
     firstname: Optional[str]

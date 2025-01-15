@@ -50,7 +50,7 @@
         </div>
         <div class="section_block" style="padding: 15px 15px;">
           <div class="logout_wrapper">
-            <ion-button class="logout_btn" @click="user_logout">Log out</ion-button>
+            <ion-button id="logout_btn" class="logout_btn" @click="user_logout">Log out</ion-button>
           </div>
         </div>
       </div>

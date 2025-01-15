@@ -155,10 +155,10 @@ def generate_invoice(invoice_data):
 # company
 
 def get_companies(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Company).options(joinedload(models.Company.users)).offset(skip).limit(limit).all()
+    return db.query(models.Company).offset(skip).limit(limit).all()
 
 def get_company(db: Session, company_id: int):
-    return db.query(models.Company).options(joinedload(models.Company.users)).filter(models.Company.id == company_id).first()
+    return db.query(models.Company).filter(models.Company.id == company_id).first()
 
 def create_company(db: Session, company: schemas.CompanyCreate):
 
