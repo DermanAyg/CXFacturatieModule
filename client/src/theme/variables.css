@@ -1,0 +1,98 @@
+/* For information on how to create your own theme, please see:
+http://ionicframework.com/docs/theming/ */
+
+:root {
+    --ion-tab-bar-color-selected: #E4833F;
+}
+
+* {
+    font-family: "Livvic", serif;
+}
+
+.container {
+    min-height: 850px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 25px;
+  }
+.section_block {
+    min-width: 90%;
+    background-color: #292828;
+    border: solid 1px RGB(13,26,51,0.1);
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 0px 15px;
+}
+.section_title {
+    font-size: 20px;
+}
+.invoices_wrapper {
+    margin-top: 20px;
+    overflow-y: scroll;
+    max-height: 150px;
+}
+.invoice_wrapper {
+    border-left: solid 7px orange;
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 7px;
+    padding-top: 7px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+.invoice_wrapper:hover {
+    background-color: #232323;
+}
+.invoice_wrapper p {
+    margin: 0;
+}
+.invoice_status_wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: row;
+}
+.invoice_wrapper_title {
+    margin-bottom: 7px!important;
+    font-size: 18px;
+}
+.invoice_wrapper_subtitle {
+    font-size: 13px;
+    color: #A8AAAC;
+}
+.invoice-icon-green {
+    font-size: 28px;
+    color: #0AA34F;
+    padding-right: 25px;
+    padding-top: 4px;
+}
+.invoice-icon-orange {
+    font-size: 28px;
+    color: #CD7130;
+    padding-right: 25px;
+    padding-top: 4px;
+}
+
+ion-button {
+    --background: #e4833f !important;
+    --border-radius: 0;
+    --color: #FFF;
+  }
+  
+
+@media only screen and (min-width: 768px) {
+    ion-modal {
+        --width: 75%;
+    }
+    .werkzaamheden_btn_wrapper {
+        left: 65vw!important;
+    }
+    .vw40 {
+        width: 25vw!important;
+    }
+}
